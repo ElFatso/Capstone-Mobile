@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kasambahayko/src/features/authentication/screens/welcome_screen/welcome_screen.dart';
-import 'package:kasambahayko/src/utils/theme/theme.dart';
+import 'package:get/get.dart';
+import 'package:kasambahayko/src/bindings/app_bindings.dart';
+import 'package:kasambahayko/src/screens/welcome/welcome_screen.dart';
+import 'package:kasambahayko/src/utils/theme/widget_themes/text_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -8,13 +10,15 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      themeMode: ThemeMode.system,
-      theme: KKAppTheme.lightTheme,
-      darkTheme: KKAppTheme.darkTheme,
-      home: const KKWelcomeScreen(),
+    return GetMaterialApp(
+      theme: ThemeData(
+        textTheme: KKTextTheme.textTheme,
+      ),
+      home: const WelcomeScreen(),
+      initialBinding: AppBindings(),
     );
   }
 }
