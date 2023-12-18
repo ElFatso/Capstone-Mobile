@@ -8,7 +8,7 @@ class AppliedJobsCreationService {
     final uri = Uri.parse('${ApiConstants.baseUrl}/worker/application');
 
     final data = {
-      'uuid': uuid,
+      'workerUUID': uuid,
       'jobId': jobId,
     };
 

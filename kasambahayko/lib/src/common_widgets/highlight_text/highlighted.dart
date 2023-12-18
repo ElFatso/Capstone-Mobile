@@ -29,7 +29,6 @@ class Highlighted extends StatelessWidget {
 
       if (service1['service_name'] is String) {
         if (service2 != null && service2['service_name'] is String) {
-          // Group service1 and service2 in a row
           paragraph.add(
             Row(
               children: [
@@ -47,9 +46,7 @@ class Highlighted extends StatelessWidget {
                         ?.copyWith(color: Colors.white),
                   ),
                 ),
-                const SizedBox(
-                    width:
-                        8), // Horizontal spacing between service1 and service2
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
@@ -68,7 +65,6 @@ class Highlighted extends StatelessWidget {
             ),
           );
         } else {
-          // Only service1 is available
           paragraph.add(
             Container(
               padding: const EdgeInsets.all(6),
@@ -87,10 +83,11 @@ class Highlighted extends StatelessWidget {
           );
         }
 
-        if (service3 != null && service3['service_name'] is String) {
-          // Add vertical spacing between the two rows
+        if (service3 != null &&
+            service3['service_name'] is String &&
+            service4 != null &&
+            service4['service_name'] is String) {
           paragraph.add(const SizedBox(height: 8));
-          // Group service3 and service4 in a row
           paragraph.add(
             Row(
               children: [
@@ -108,9 +105,7 @@ class Highlighted extends StatelessWidget {
                         ?.copyWith(color: Colors.white),
                   ),
                 ),
-                const SizedBox(
-                    width:
-                        8), // Horizontal spacing between service3 and service4
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
@@ -129,7 +124,7 @@ class Highlighted extends StatelessWidget {
             ),
           );
         } else if (service3 != null) {
-          // Only service3 is available
+          paragraph.add(const SizedBox(height: 8));
           paragraph.add(
             Container(
               padding: const EdgeInsets.all(6),

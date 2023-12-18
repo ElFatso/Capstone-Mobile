@@ -4,12 +4,14 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kasambahayko/src/common_widgets/drawer_employer/dashboard_sections.dart';
 import 'package:kasambahayko/src/common_widgets/input_fields/boolean_multiselect_input_field.dart';
-import 'package:kasambahayko/src/common_widgets/input_fields/payment_frequency_input_field.dart';
+import 'package:kasambahayko/src/common_widgets/input_fields/single_item_dropdown.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/additional_employer.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
+import 'package:kasambahayko/src/controllers/configurations_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/employer_profile_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/user_profile_image_controller.dart';
+import 'package:kasambahayko/src/routing/api/api_constants.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_screen.dart';
 import 'package:kasambahayko/src/utils/theme_employer.dart';
 import 'package:multiselect/multiselect.dart';
@@ -50,8 +52,21 @@ class EmployerAdditionalScreenState extends State<EmployerAdditionalScreen> {
     'Cash',
     'Paymaya',
   ];
-  String? selectedPaymentFrequency;
+  String? selectedPaymentFrequency = 'Daily';
+  List<String> availablePaymentFrequency = [];
   String bio = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    final configurationsController = Get.find<ConfigurationsController>();
+    availablePaymentFrequency = configurationsController
+        .employerInfoFrequencyOfPayment
+        .split(',')
+        .map((item) => item.trim())
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,12 +103,6 @@ class EmployerAdditionalScreenState extends State<EmployerAdditionalScreen> {
                           padding: const EdgeInsets.only(top: 12.0),
                           child: Row(
                             children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: controlsDetails.onStepContinue,
-                                  child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
-                                ),
-                              ),
                               if (currentStep != 0)
                                 Expanded(
                                   child: OutlinedButton(
@@ -101,6 +110,12 @@ class EmployerAdditionalScreenState extends State<EmployerAdditionalScreen> {
                                     child: const Text('BACK'),
                                   ),
                                 ),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: controlsDetails.onStepContinue,
+                                  child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
+                                ),
+                              ),
                             ],
                           ),
                         );
@@ -158,13 +173,13 @@ class EmployerAdditionalScreenState extends State<EmployerAdditionalScreen> {
     if (result['success']) {
       // The image was successfully uploaded
       final imageUrl = result['data']['imageUrl'];
+      log('Image URL: $imageUrl');
 
       // Remove 'server' from the imageUrl
       final modifiedImageUrl = imageUrl.replaceAll('server', '');
 
       // Construct the full URL
-      const baseUrl = 'http://10.0.2.2:5000';
-      final fullImageUrl = '$baseUrl/$modifiedImageUrl';
+      final fullImageUrl = '${ApiConstants.baseUrl}$modifiedImageUrl';
 
       // Update the user's image URL
       final userInfoController = Get.find<UserInfoController>();
@@ -259,15 +274,17 @@ class EmployerAdditionalScreenState extends State<EmployerAdditionalScreen> {
               Text("Payment Frequency",
                   style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 12),
-              PaymentFrequencyWidget(
-                selectedFrequency:
-                    stringToPaymentFrequency(selectedPaymentFrequency),
+              SingleItemDropdown(
+                items: availablePaymentFrequency,
+                selectedItem: selectedPaymentFrequency,
                 onChanged: (value) {
-                  setState(() {
-                    selectedPaymentFrequency = paymentFrequencyToString(value);
-                  });
+                  selectedPaymentFrequency = value;
                 },
-                enabled: true,
+                decoration: InputDecoration(
+                  labelText: "Payment Frequency",
+                  labelStyle: Theme.of(context).textTheme.bodyMedium,
+                  border: const OutlineInputBorder(),
+                ),
               ),
             ],
           ),
@@ -347,21 +364,23 @@ class EmployerAdditionalScreenState extends State<EmployerAdditionalScreen> {
               CircleAvatar(
                 radius: 60,
                 backgroundColor: const Color(0xFFFAFAFA),
-                child: Obx(() {
-                  final userInfoController = Get.find<UserInfoController>();
-                  final imageUrl =
-                      userInfoController.userInfo['imageUrl'].toString();
-                  return ClipOval(
-                    child: SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
+                child: Obx(
+                  () {
+                    final userInfoController = Get.find<UserInfoController>();
+                    final imageUrl =
+                        userInfoController.userInfo['imageUrl'].toString();
+                    return ClipOval(
+                      child: SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  },
+                ),
               ),
             ],
           ),

@@ -6,6 +6,7 @@ import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/book
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/home_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/messaging_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/notifications_page.dart';
+import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/postings/application_review.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/postings/job_post_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/profile_page/profile.page.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/search/search_page.dart';
@@ -57,10 +58,13 @@ class EmployerDashboardScreenState extends State<EmployerDashboardScreen> {
         contentWidget = SearchPage();
         break;
       case EmployerDashboardSections.posts:
-        contentWidget = const JobPostPage();
+        contentWidget = JobPostPage(onSectionSelected: goToPage);
         break;
       case EmployerDashboardSections.bookings:
         contentWidget = const BookingsPage();
+        break;
+      case EmployerDashboardSections.applications:
+        contentWidget = const ApplicationsPage();
         break;
       case EmployerDashboardSections.notifications:
         contentWidget = const NotificationsPage();

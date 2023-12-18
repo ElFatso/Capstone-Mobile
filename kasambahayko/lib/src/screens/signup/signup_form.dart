@@ -61,12 +61,6 @@ class SignupFormState extends State<SignupForm> {
                 padding: const EdgeInsets.only(top: 12.0),
                 child: Row(
                   children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: controlsDetails.onStepContinue,
-                        child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
-                      ),
-                    ),
                     if (currentStep != 0)
                       Expanded(
                         child: OutlinedButton(
@@ -74,6 +68,12 @@ class SignupFormState extends State<SignupForm> {
                           child: const Text('BACK'),
                         ),
                       ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: controlsDetails.onStepContinue,
+                        child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
+                      ),
+                    ),
                   ],
                 ),
               );

@@ -1,15 +1,15 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kasambahayko/src/common_widgets/drawer_worker/dashboard_sections.dart';
-import 'package:kasambahayko/src/common_widgets/input_fields/education_level_input_field.dart';
+import 'package:kasambahayko/src/common_widgets/input_fields/single_item_dropdown.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/additional_worker.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/user_profile_image_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_profile_controller.dart';
+import 'package:kasambahayko/src/routing/api/api_constants.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_screen.dart';
 import 'package:kasambahayko/src/utils/theme_worker.dart';
 import 'package:multiselect/multiselect.dart';
@@ -76,7 +76,14 @@ class WorkerAdditionalScreenState extends State<WorkerAdditionalScreen> {
     'Police Clearance',
     'NBI Clearance',
   ];
-  String? selectedEducationLevel;
+  String? selectedEducationLevel = 'Elementary';
+  final List<String> availableEducationLevel = [
+    'Elementary',
+    'High School',
+    'College',
+    'Vocational',
+    'Post Graduate',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -133,12 +140,6 @@ class WorkerAdditionalScreenState extends State<WorkerAdditionalScreen> {
                           padding: const EdgeInsets.only(top: 12.0),
                           child: Row(
                             children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: controlsDetails.onStepContinue,
-                                  child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
-                                ),
-                              ),
                               if (currentStep != 0)
                                 Expanded(
                                   child: OutlinedButton(
@@ -146,6 +147,12 @@ class WorkerAdditionalScreenState extends State<WorkerAdditionalScreen> {
                                     child: const Text('BACK'),
                                   ),
                                 ),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: controlsDetails.onStepContinue,
+                                  child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
+                                ),
+                              ),
                             ],
                           ),
                         );
@@ -210,8 +217,7 @@ class WorkerAdditionalScreenState extends State<WorkerAdditionalScreen> {
       final modifiedImageUrl = imageUrl.replaceAll('server', '');
 
       // Construct the full URL
-      const baseUrl = 'http://10.0.2.2:5000';
-      final fullImageUrl = '$baseUrl/$modifiedImageUrl';
+      final fullImageUrl = '${ApiConstants.baseUrl}$modifiedImageUrl';
 
       // Update the user's image URL
       final userInfoController = Get.find<UserInfoController>();
@@ -374,17 +380,18 @@ class WorkerAdditionalScreenState extends State<WorkerAdditionalScreen> {
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Education Level",
-                  style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 12),
-              EducationLevelWidget(
-                selectedLevel: stringToEducationLevel(selectedEducationLevel),
+              SingleItemDropdown(
+                items: availableEducationLevel,
+                selectedItem: selectedEducationLevel,
                 onChanged: (value) {
-                  setState(() {
-                    selectedEducationLevel = educationLevelToString(value);
-                  });
+                  selectedEducationLevel = value;
                 },
-                enabled: true,
+                decoration: InputDecoration(
+                  labelText: "Education Level",
+                  labelStyle: Theme.of(context).textTheme.bodyMedium,
+                  border: const OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 12),
               DropDownMultiSelect(

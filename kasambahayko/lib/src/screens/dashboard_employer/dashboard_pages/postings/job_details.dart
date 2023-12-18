@@ -26,7 +26,7 @@ class JobDetailsScreen extends StatelessWidget {
   final String formattedJobEndDate;
   final String jobStartTime;
   final String jobEndTime;
-  final String livingArrangement;
+  final String selectedLivingArrangement;
 
   JobDetailsScreen({
     super.key,
@@ -38,7 +38,7 @@ class JobDetailsScreen extends StatelessWidget {
     required this.jobDescription,
     required this.formattedJobStartDate,
     required this.formattedJobEndDate,
-    required this.livingArrangement,
+    required this.selectedLivingArrangement,
     required this.jobStartTime,
     required this.jobEndTime,
     required this.serviceId,
@@ -60,6 +60,12 @@ class JobDetailsScreen extends StatelessWidget {
                     Text(
                       jobTitle,
                       style: Theme.of(context).textTheme.titleLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      selectedLivingArrangement,
+                      style: Theme.of(context).textTheme.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
@@ -185,11 +191,16 @@ class JobDetailsScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
+                    const Divider(
+                      color: greycolor,
+                      thickness: 1,
+                    ),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 24),
                         Expanded(
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
@@ -239,7 +250,8 @@ class JobDetailsScreen extends StatelessWidget {
                                             formattedJobEndDate,
                                         jobStartTime: jobStartTime,
                                         jobEndTime: jobEndTime,
-                                        livingArrangement: livingArrangement,
+                                        selectedLivingArrangement:
+                                            selectedLivingArrangement,
                                         serviceId: serviceId,
                                       ),
                                   transition: Transition.downToUp);
@@ -247,9 +259,15 @@ class JobDetailsScreen extends StatelessWidget {
                             child: const Text('Edit'),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 24),
                       ],
                     ),
+                    const SizedBox(height: 8),
+                    const Divider(
+                      color: greycolor,
+                      thickness: 1,
+                    ),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),

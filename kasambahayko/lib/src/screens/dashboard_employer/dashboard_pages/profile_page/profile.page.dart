@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kasambahayko/src/common_widgets/input_fields/boolean_multiselect_input_field.dart';
-import 'package:kasambahayko/src/common_widgets/input_fields/payment_frequency_input_field.dart';
+import 'package:kasambahayko/src/common_widgets/input_fields/single_item_dropdown.dart';
 import 'package:kasambahayko/src/constants/colors.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
@@ -54,7 +54,13 @@ class ProfilePageState extends State<ProfilePage> {
   ];
 
   List<String?> selectedPaymentMethods = [];
-  String? selectedPaymentFrequency;
+  String? selectedPaymentFrequency = 'Daily';
+  final List<String> availablePaymentFrequency = [
+    'Daily',
+    'Weekly',
+    'Semi-Monthly',
+    'Monthly',
+  ];
   bool isPaymentInfoEdit = false;
 
   @override
@@ -71,6 +77,12 @@ class ProfilePageState extends State<ProfilePage> {
     size = profileInfo['householdSize'].toString();
     requirements = profileInfo['specificNeeds'].toString();
     selectedPaymentFrequency = profileInfo['paymentFrequency'].toString();
+    // final configurationsController = Get.find<ConfigurationsController>();
+    // availablePaymentFrequency = configurationsController
+    //     .employerInfoFrequencyOfPayment
+    //     .split(',')
+    //     .map((item) => item.trim())
+    //     .toList();
     List<dynamic> paymentMethodsData = profileInfo['paymentMethods'];
 
     log(paymentMethodsData.toString());
@@ -88,8 +100,17 @@ class ProfilePageState extends State<ProfilePage> {
     log(selectedPaymentMethods.toString());
 
     Map<String, dynamic> petsData = profileInfo['pets'];
+    log(petsData.toString());
 
-    selectedPets = petsData.values.cast<int>().toList();
+    selectedPets = petsData.values.map((value) {
+      if (value is int) {
+        return value;
+      } else if (value is bool) {
+        return value ? 1 : 0;
+      } else {
+        return 0;
+      }
+    }).toList();
   }
 
   @override
@@ -394,8 +415,6 @@ class ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Payment Methods",
-                              style: Theme.of(context).textTheme.bodyMedium),
                           const SizedBox(height: 12),
                           DropDownMultiSelect(
                             options: availablePaymentMethods,
@@ -416,18 +435,18 @@ class ProfilePageState extends State<ProfilePage> {
                             enabled: isPaymentInfoEdit,
                           ),
                           const SizedBox(height: 12),
-                          Text("Payment Frequency",
-                              style: Theme.of(context).textTheme.bodyMedium),
-                          const SizedBox(height: 12),
-                          PaymentFrequencyWidget(
-                            selectedFrequency: stringToPaymentFrequency(
-                                selectedPaymentFrequency),
+                          SingleItemDropdown(
+                            items: availablePaymentFrequency,
+                            selectedItem: selectedPaymentFrequency,
                             onChanged: (value) {
-                              setState(() {
-                                selectedPaymentFrequency =
-                                    paymentFrequencyToString(value);
-                              });
+                              selectedPaymentFrequency = value;
                             },
+                            decoration: InputDecoration(
+                              labelText: "Payment Frequency",
+                              labelStyle:
+                                  Theme.of(context).textTheme.bodyMedium,
+                              border: const OutlineInputBorder(),
+                            ),
                             enabled: isPaymentInfoEdit,
                           ),
                         ],

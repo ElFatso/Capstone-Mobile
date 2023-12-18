@@ -374,7 +374,7 @@ class FilterListingsState extends State<FilterListings> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                   ),
                   onPressed: () {
                     final listingController = Get.find<JobListingsController>();

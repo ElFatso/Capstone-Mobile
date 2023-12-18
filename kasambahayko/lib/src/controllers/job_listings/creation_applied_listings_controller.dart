@@ -5,15 +5,17 @@ import 'package:kasambahayko/src/routing/api/job_listings_service/applied_creati
 class ApplyJobController extends GetxController {
   String errorMessage = '';
 
-  Future<Map<String, dynamic>> applyForJob(String uuid, String jobId) async {
+  Future<Map<String, dynamic>> applyForJob(
+      String workerUUID, String jobId) async {
     try {
       log('applyForJob called with the following parameters:');
-      log('uuid: $uuid');
+      log('uuid: $workerUUID');
       log('jobId: $jobId');
 
       final jobApplicationService = AppliedJobsCreationService();
 
-      final response = await jobApplicationService.applyForJob(uuid, jobId);
+      final response =
+          await jobApplicationService.applyForJob(workerUUID, jobId);
 
       log('Response from AppliedJobsCreationService: $response');
 

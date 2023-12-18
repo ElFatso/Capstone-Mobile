@@ -79,6 +79,7 @@ class LoginForm extends StatelessWidget {
                     var distances =
                         await LocationService.fetchUserDistances(userInfo);
                     userInfo['distances'] = distances;
+
                     Get.find<UserInfoController>().userInfo.value = userInfo;
                     final jobPostsController = Get.find<JobPostsController>();
                     jobPostsController.fetchJobPosts(userInfo['uuid']);
@@ -92,8 +93,6 @@ class LoginForm extends StatelessWidget {
                     final appliedJobsController =
                         Get.find<AppliedJobsController>();
                     appliedJobsController.fetchAppliedJobs(userInfo['uuid']);
-
-                    Get.find<UserInfoController>().userInfo;
 
                     if (userInfo['completedProfile'] == 'true') {
                       if (userInfo['userType'] == 'household employer') {

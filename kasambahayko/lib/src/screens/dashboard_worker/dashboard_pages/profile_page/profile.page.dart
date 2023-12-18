@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kasambahayko/src/common_widgets/input_fields/education_level_input_field.dart';
+import 'package:kasambahayko/src/common_widgets/input_fields/single_item_dropdown.dart';
 import 'package:kasambahayko/src/constants/colors.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
@@ -86,7 +86,14 @@ class ProfilePageState extends State<ProfilePage> {
 
   List<String?> selectedLanguages = [];
   List<String?> selectedCertifications = [];
-  String? selectedEducationLevel;
+  String? selectedEducationLevel = 'Elementary';
+  final List<String> availableEducationLevel = [
+    'Elementary',
+    'High School',
+    'College',
+    'Vocational',
+    'Post Graduate',
+  ];
   bool isWorkerBackgroundEdit = false;
 
   @override
@@ -628,15 +635,17 @@ class ProfilePageState extends State<ProfilePage> {
                       )),
                   children: <Widget>[
                     const SizedBox(height: 12),
-                    EducationLevelWidget(
-                      selectedLevel:
-                          stringToEducationLevel(selectedEducationLevel),
+                    SingleItemDropdown(
+                      items: availableEducationLevel,
+                      selectedItem: selectedEducationLevel,
                       onChanged: (value) {
-                        setState(() {
-                          selectedEducationLevel =
-                              educationLevelToString(value);
-                        });
+                        selectedEducationLevel = value;
                       },
+                      decoration: InputDecoration(
+                        labelText: "Education Level",
+                        labelStyle: Theme.of(context).textTheme.bodyMedium,
+                        border: const OutlineInputBorder(),
+                      ),
                       enabled: isWorkerBackgroundEdit,
                     ),
                     const SizedBox(height: 12),
@@ -733,6 +742,17 @@ class ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 16),
                   ],
                 ),
+                const ExpansionTile(
+                    title: Text("Documents",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        )),
+                    children: <Widget>[
+                      SizedBox(height: 12),
+                      SizedBox(height: 16),
+                    ]),
               ],
             ),
           ),

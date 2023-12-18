@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:kasambahayko/src/common_widgets/distance_calculator/location_service.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
-import 'package:kasambahayko/src/routing/api/job_listings_service/applied_services.dart';
+import 'package:kasambahayko/src/routing/api/job_listings_service/applied_service.dart';
 
 class AppliedJobsController extends GetxController {
   final AppliedJobsService appliedJobsService = AppliedJobsService();

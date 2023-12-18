@@ -98,7 +98,7 @@ class ImageSelectionScreen extends GetView {
       final modifiedImageUrl = imageUrl.replaceAll('server', '');
 
       // Construct the full URL
-      final fullImageUrl = '${ApiConstants.baseUrl}/$modifiedImageUrl';
+      final fullImageUrl = '${ApiConstants.baseUrl}$modifiedImageUrl';
 
       // Update the user's image URL
       final userInfoController = Get.find<UserInfoController>();

@@ -10,4 +10,5 @@ const Color redcolor = Color(0xFFff3d32);
 const Color yellowcolor = Color(0xFFf59e0b);
 const Color whitecolor = Color(0xFFffffff);
 const Color greycolor = Color(0xFFeeeeee);
+const Color graycolor = Color(0xFFE0E0E0);
 const Color blackcolor = Color(0xFF000000);

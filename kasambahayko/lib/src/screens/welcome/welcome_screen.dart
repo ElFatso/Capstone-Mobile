@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kasambahayko/src/constants/colors.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
 import 'package:kasambahayko/src/constants/text_strings.dart';
+import 'package:kasambahayko/src/controllers/configurations_controller.dart';
 import 'package:kasambahayko/src/screens/login/login_screen.dart';
 import 'package:kasambahayko/src/screens/signup/signup_screen.dart';
 import 'package:kasambahayko/src/utils/theme.dart';
@@ -16,6 +18,7 @@ class WelcomeScreen extends StatelessWidget {
       child: Theme(
         data: StandardTheme.theme,
         child: Scaffold(
+            backgroundColor: whitecolor,
             body: Container(
                 padding: const EdgeInsets.all(defaultsize),
                 child: Column(
@@ -40,14 +43,26 @@ class WelcomeScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () => Get.to(() => const LoginScreen()),
+                            onPressed: () async {
+                              final configurationsController =
+                                  Get.put(ConfigurationsController());
+                              await configurationsController
+                                  .fetchConfigurations();
+                              Get.to(() => const LoginScreen());
+                            },
                             child: Text(login.toUpperCase()),
                           ),
                         ),
                         const SizedBox(width: 10.0),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () => Get.to(() => const SignupScreen()),
+                            onPressed: () async {
+                              final configurationsController =
+                                  Get.put(ConfigurationsController());
+                              await configurationsController
+                                  .fetchConfigurations();
+                              Get.to(() => const SignupScreen());
+                            },
                             child: Text(signup.toUpperCase()),
                           ),
                         ),

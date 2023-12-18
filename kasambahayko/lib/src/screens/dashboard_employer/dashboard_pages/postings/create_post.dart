@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:kasambahayko/src/common_widgets/drawer_employer/dashboard_sections.dart';
-import 'package:kasambahayko/src/common_widgets/input_fields/living_arrangments_input_field.dart';
+import 'package:kasambahayko/src/common_widgets/input_fields/single_item_dropdown.dart';
 import 'package:kasambahayko/src/common_widgets/picker/date_picker/date_picker.dart';
 import 'package:kasambahayko/src/common_widgets/picker/time_picker/time_picker.dart';
 import 'package:kasambahayko/src/common_widgets/radio_buttons/radio_list.dart';
@@ -29,7 +29,14 @@ class CreatePostScreenState extends State<CreatePostScreen> {
   DateTime jobEndDate = DateTime.now();
   DateTime jobStartTime = DateTime.now();
   DateTime jobEndTime = DateTime.now();
-  String? livingArrangement;
+  String? selectedLivingArrangement = 'Live-in with own quarters';
+  final List<String> availableLivingArrangement = [
+    'Live-in with own quarters',
+    'Live-in with shared quarters',
+    'Live-in with separate entrance',
+    'Live-out with own transportation',
+    'Live-out with stipend',
+  ];
   String jobTitle = '';
   String jobDescription = '';
 
@@ -51,12 +58,6 @@ class CreatePostScreenState extends State<CreatePostScreen> {
                 padding: const EdgeInsets.only(top: 12.0),
                 child: Row(
                   children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: controlsDetails.onStepContinue,
-                        child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
-                      ),
-                    ),
                     if (currentStep != 0)
                       Expanded(
                         child: OutlinedButton(
@@ -64,6 +65,12 @@ class CreatePostScreenState extends State<CreatePostScreen> {
                           child: const Text('BACK'),
                         ),
                       ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: controlsDetails.onStepContinue,
+                        child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -85,7 +92,7 @@ class CreatePostScreenState extends State<CreatePostScreen> {
                   DateFormat('yyyy-MM-dd').format(jobEndDate),
                   DateFormat('HH:mm').format(jobStartTime),
                   DateFormat('HH:mm').format(jobEndTime),
-                  livingArrangement ?? '',
+                  selectedLivingArrangement ?? '',
                 );
 
                 await jobPostsController.reloadJobPosts(uuid);
@@ -214,8 +221,6 @@ class CreatePostScreenState extends State<CreatePostScreen> {
                 },
               ),
               const SizedBox(height: 20),
-
-              // Time Pickers
               TimeRangePickerWidget(
                   selectedStartTime: jobStartTime,
                   selectedEndTime: jobEndTime,
@@ -230,13 +235,19 @@ class CreatePostScreenState extends State<CreatePostScreen> {
                     });
                   }),
               const SizedBox(height: 20),
-              LivingArrangementsWidget(
-                selectedArrangementName: livingArrangement ?? '',
+              SingleItemDropdown(
+                items: availableLivingArrangement,
+                selectedItem: selectedLivingArrangement,
                 onChanged: (value) {
                   setState(() {
-                    livingArrangement = value;
+                    selectedLivingArrangement = value;
                   });
                 },
+                decoration: InputDecoration(
+                  labelText: "Payment Frequency",
+                  labelStyle: Theme.of(context).textTheme.bodyMedium,
+                  border: const OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 12),
             ],

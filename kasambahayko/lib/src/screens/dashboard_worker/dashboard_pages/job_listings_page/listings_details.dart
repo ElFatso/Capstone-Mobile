@@ -248,7 +248,7 @@ class ListingDetailsScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(16),
                       ),
                       onPressed: () async {
                         final uuid = Get.find<UserInfoController>()
