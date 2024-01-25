@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:get/get.dart';
-import 'package:kasambahayko/src/routing/api/auth_service/profile_worker_service.dart';
+import 'package:kasambahayko/src/routing/api/user_service/worker_profile_service.dart';
 
 class WorkerProfileController extends GetxController {
   final WorkerProfileService workerService = WorkerProfileService();

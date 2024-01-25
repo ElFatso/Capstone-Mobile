@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:kasambahayko/src/common_widgets/drawer_worker/dashboard_drawer.dart';
 import 'package:kasambahayko/src/common_widgets/drawer_worker/dashboard_sections.dart';
 import 'package:kasambahayko/src/constants/colors.dart';
+import 'package:kasambahayko/src/controllers/auth_controllers/login_controller.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/bookings_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/home_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/job_listings_page/listings_page.dart';
-import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/messaging_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/notifications_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/profile_page/profile.page.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/reviews_page.dart';
-import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/settings_page.dart';
+import 'package:kasambahayko/src/screens/login/login_screen.dart';
 import 'package:kasambahayko/src/utils/theme_worker.dart';
 
 class WorkerDashboardScreen extends StatefulWidget {
@@ -35,7 +36,19 @@ class WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
 
   void navigateToPage(WorkerDashboardSections section) {
     setState(() {
-      currentPage = section;
+      if (section == WorkerDashboardSections.logout) {
+        final loginController = Get.find<LoginController>();
+
+        loginController.emailController.clear();
+        loginController.passwordController.clear();
+
+        // Delaying for 500 milliseconds (0.5 seconds)
+        Future.delayed(const Duration(milliseconds: 200), () {
+          Get.off(() => const LoginScreen());
+        });
+      } else {
+        // Handle other sections if needed
+      }
     });
     Navigator.pop(context);
   }
@@ -67,37 +80,29 @@ class WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
       case WorkerDashboardSections.notifications:
         contentWidget = const NotificationsPage();
         break;
-      case WorkerDashboardSections.messaging:
-        contentWidget = const MessagingPage();
-        break;
       case WorkerDashboardSections.profile:
         contentWidget = const ProfilePage();
         break;
-      case WorkerDashboardSections.settings:
-        contentWidget = const SettingsPage();
-        break;
       case WorkerDashboardSections.logout:
-        contentWidget = const SettingsPage();
+        contentWidget = Container();
     }
 
     return Theme(
       data: WorkerTheme.theme,
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 80,
-            backgroundColor: secondarycolor,
-            centerTitle: true,
-            title: const Text(
-              'KasambahayKo',
-              textAlign: TextAlign.center,
-            ),
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 80,
+          backgroundColor: secondarycolor,
+          centerTitle: true,
+          title: const Text(
+            'KasambahayKo',
+            textAlign: TextAlign.center,
           ),
-          body: contentWidget,
-          drawer: DashboardDrawer(
-            currentPage: currentPage,
-            onMenuItemTap: navigateToPage,
-          ),
+        ),
+        body: contentWidget,
+        drawer: DashboardDrawer(
+          currentPage: currentPage,
+          onMenuItemTap: navigateToPage,
         ),
       ),
     );

@@ -21,6 +21,7 @@ class ProgressTimelineController extends GetxController {
 
       if (result['success']) {
         log('Timeline events successfully fetched.');
+        log(result.toString());
 
         final dynamic data = result['data'];
         final List<Map<String, dynamic>> dataList =

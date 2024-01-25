@@ -48,13 +48,6 @@ class DrawerList extends StatelessWidget {
             currentPage == EmployerDashboardSections.notifications,
             onMenuItemTap),
         buildMenuItem(
-            EmployerDashboardSections.messaging,
-            "Messaging",
-            Icons.message_outlined,
-            currentPage == EmployerDashboardSections.messaging,
-            onMenuItemTap),
-        const Divider(),
-        buildMenuItem(
           EmployerDashboardSections.profile,
           "Profile",
           Icons.person_outline,
@@ -62,11 +55,12 @@ class DrawerList extends StatelessWidget {
           onMenuItemTap,
         ),
         buildMenuItem(
-            EmployerDashboardSections.settings,
-            "Settings",
-            Icons.settings_outlined,
-            currentPage == EmployerDashboardSections.settings,
-            onMenuItemTap),
+          EmployerDashboardSections.logout,
+          "Logout",
+          Icons.logout_outlined,
+          currentPage == EmployerDashboardSections.logout,
+          onMenuItemTap,
+        ),
       ],
     );
   }

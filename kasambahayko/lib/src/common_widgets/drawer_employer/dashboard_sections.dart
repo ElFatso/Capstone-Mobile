@@ -5,8 +5,6 @@ enum EmployerDashboardSections {
   applications,
   bookings,
   notifications,
-  messaging,
-  settings,
   logout,
   profile
 }

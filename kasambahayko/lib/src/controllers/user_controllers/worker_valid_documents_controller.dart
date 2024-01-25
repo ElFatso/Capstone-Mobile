@@ -1,33 +1,31 @@
 import 'dart:developer';
-
 import 'package:get/get.dart';
-import 'package:kasambahayko/src/routing/api/user_service/employer_profile_service.dart';
+import 'package:kasambahayko/src/routing/api/user_service/worker_valid_documents.dart';
 
-class EmployerProfileController extends GetxController {
-  final EmployerProfileService userService = EmployerProfileService();
+class DocumentsController extends GetxController {
+  final DocumentsService documentService = DocumentsService();
   RxBool hasError = false.obs;
   RxString errorMessage = ''.obs;
+  RxList<dynamic> documents = <dynamic>[].obs;
 
-  Future<Map<dynamic, dynamic>?> fetchEmployerProfile(String uuid) async {
+  Future<void> fetchDocuments(String uuid) async {
     try {
-      final result = await userService.fetchEmployerProfile(uuid);
+      final result = await documentService.fetchDocuments(uuid);
 
       if (result['success']) {
         hasError.value = false;
         errorMessage.value = '';
-        log("User Profile Data: ${result['data']}");
+        documents.assignAll(result['data']);
+        log("Document Data: $documents");
       } else {
         hasError.value = true;
         errorMessage.value = result['error'];
         log("Error: ${result['error']}");
       }
-
-      return result['data'];
     } catch (error) {
       hasError.value = true;
       errorMessage.value = 'An error occurred during the request: $error';
       log("Error: $error");
-      return null;
     }
   }
 }

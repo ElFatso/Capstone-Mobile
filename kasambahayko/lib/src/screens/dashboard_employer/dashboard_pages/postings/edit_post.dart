@@ -85,11 +85,11 @@ class EditPostScreenState extends State<EditPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Theme(
-        data: EmployerTheme.theme,
-        child: Scaffold(
-          body: Stepper(
+    return Theme(
+      data: EmployerTheme.theme,
+      child: Scaffold(
+        body: SafeArea(
+          child: Stepper(
             type: StepperType.horizontal,
             steps: getsteps(),
             currentStep: currentStep,

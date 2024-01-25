@@ -183,6 +183,7 @@ class StepOnePage extends StatelessWidget {
                       final servicesList = applicant['information']['services'];
                       final languagesList =
                           applicant['information']['languages'];
+                      final documents = applicant['information']['documents'];
                       final appDate = applicant['application_date'];
 
                       final date = DateTime.parse(appDate);
@@ -306,6 +307,7 @@ class StepOnePage extends StatelessWidget {
                                             experience: experience,
                                             servicesList: servicesList,
                                             languagesList: languagesList,
+                                            documents: documents,
                                           ),
                                       transition: Transition.rightToLeft);
                                 },

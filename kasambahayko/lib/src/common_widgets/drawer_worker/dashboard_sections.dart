@@ -4,8 +4,6 @@ enum WorkerDashboardSections {
   listings,
   bookings,
   notifications,
-  messaging,
-  settings,
   logout,
   profile,
 }

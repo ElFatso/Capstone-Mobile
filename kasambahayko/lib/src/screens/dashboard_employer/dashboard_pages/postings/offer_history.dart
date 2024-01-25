@@ -15,11 +15,11 @@ class OfferHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Theme(
-        data: EmployerTheme.theme,
-        child: Scaffold(
-          body: Padding(
+    return Theme(
+      data: EmployerTheme.theme,
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
             padding: const EdgeInsets.all(defaultpadding),
             child: Center(
               child: SingleChildScrollView(

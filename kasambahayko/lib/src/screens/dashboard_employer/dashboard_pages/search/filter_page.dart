@@ -17,10 +17,12 @@ enum SortOrder {
 
 class FilterPage extends StatefulWidget {
   final List<String> selectedServiceNames;
+  final List<String> selectedDocuments;
 
   const FilterPage({
     Key? key,
     required this.selectedServiceNames,
+    required this.selectedDocuments,
   }) : super(key: key);
 
   @override
@@ -40,13 +42,22 @@ class FilterPageState extends State<FilterPage> {
 
   List<String> selectedServiceNames = [];
 
+  final List<String> availableDocuments = [
+    'resume',
+    'barangay clearance',
+    'police clearance',
+    'nbi clearance',
+  ];
+
+  List<String> selectedDocuments = [];
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Theme(
-        data: EmployerTheme.theme,
-        child: Scaffold(
-          body: Padding(
+    return Theme(
+      data: EmployerTheme.theme,
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
             padding: const EdgeInsets.all(defaultpadding),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -81,6 +92,27 @@ class FilterPageState extends State<FilterPage> {
                         },
                         decoration: InputDecoration(
                           labelText: "Select Service Categories",
+                          labelStyle: Theme.of(context).textTheme.bodyMedium,
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        "Document Availability",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 16),
+                      DropDownMultiSelect(
+                        options: availableDocuments,
+                        hintStyle: Theme.of(context).textTheme.bodyMedium,
+                        selectedValues: widget.selectedDocuments,
+                        onChanged: (selectedItems) {
+                          setState(() {
+                            selectedDocuments = selectedItems.cast<String>();
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: "Select Document Availability",
                           labelStyle: Theme.of(context).textTheme.bodyMedium,
                           border: const OutlineInputBorder(),
                         ),
@@ -197,10 +229,13 @@ class FilterPageState extends State<FilterPage> {
                   ),
                   onPressed: () {
                     final selectedNames = widget.selectedServiceNames.toList();
+                    final selectedDocuments = widget.selectedDocuments.toList();
                     final workerController = Get.find<WorkerController>();
                     workerController.selectedServiceNames
                         .assignAll(selectedNames);
-                    workerController.applyServiceFilter();
+                    workerController.selectedDocuments
+                        .assignAll(selectedDocuments);
+                    workerController.applyCombinedFilter();
 
                     if (payRateSortOrder != SortOrder.none) {
                       workerController.sortWorkersByPayRate(

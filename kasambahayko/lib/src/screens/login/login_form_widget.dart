@@ -15,13 +15,14 @@ import 'package:kasambahayko/src/controllers/post_creation/job_post_controller.d
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/login_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_profile_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/worker_valid_documents_controller.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_screen.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_screen.dart';
 import 'package:kasambahayko/src/screens/signup/additional_employer.dart';
 import 'package:kasambahayko/src/screens/signup/additional_worker.dart';
 
 class LoginForm extends StatelessWidget {
-  final LoginController controller = Get.find();
+  final loginController = Get.find<LoginController>();
 
   LoginForm({super.key});
   @override
@@ -33,27 +34,27 @@ class LoginForm extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             EmailInputField(
-              controller: controller.emailController,
+              controller: loginController.emailController,
             ),
             const SizedBox(
               height: formHeight - 20,
             ),
             PasswordInputField(
-              controller: controller.passwordController,
+              controller: loginController.passwordController,
             ),
             const SizedBox(height: formHeight - 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Obx(() {
-                  final bool isChecked = controller.rememberMe.value;
+                  final bool isChecked = loginController.rememberMe.value;
                   return Row(
                     children: [
                       Checkbox(
                         value: isChecked,
                         onChanged: (bool? newValue) {
                           if (newValue != null) {
-                            controller.rememberMe.value = newValue;
+                            loginController.rememberMe.value = newValue;
                           }
                         },
                       ),
@@ -72,7 +73,7 @@ class LoginForm extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   final loginResult =
-                      await controller.signInWithEmailAndPassword();
+                      await loginController.signInWithEmailAndPassword();
 
                   if (loginResult['success']) {
                     var userInfo = loginResult['data'];
@@ -112,6 +113,10 @@ class LoginForm extends StatelessWidget {
                                 .fetchWorkerProfile(userInfo['uuid']);
                         Get.find<UserInfoController>().workerProfile.value =
                             workerProfileData!;
+                        final documentsController =
+                            Get.find<DocumentsController>();
+                        await documentsController
+                            .fetchDocuments(userInfo['uuid']);
                         Get.to(() => const WorkerDashboardScreen(
                               initialPage: WorkerDashboardSections.home,
                             ));

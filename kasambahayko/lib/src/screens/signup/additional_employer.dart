@@ -75,91 +75,88 @@ class EmployerAdditionalScreenState extends State<EmployerAdditionalScreen> {
         selectedPaymentMethods.map((item) {
       return {"name": item};
     }).toList();
-    return SafeArea(
-      child: Theme(
-        data: EmployerTheme.theme,
-        child: Scaffold(
-          body: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: defaultpadding, bottom: defaultpadding),
-                child: Column(
-                  children: [
-                    Text(
-                      "Finishing Setup",
-                      style: Theme.of(context).textTheme.titleLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                    Stepper(
-                      steps: getsteps(),
-                      currentStep: currentStep,
-                      onStepTapped: (step) =>
-                          setState(() => currentStep = step),
-                      controlsBuilder: (BuildContext context,
-                          ControlsDetails controlsDetails) {
-                        final lastStep = currentStep == getsteps().length - 1;
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: Row(
-                            children: [
-                              if (currentStep != 0)
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: controlsDetails.onStepCancel,
-                                    child: const Text('BACK'),
-                                  ),
-                                ),
+    return Theme(
+      data: EmployerTheme.theme,
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  top: defaultpadding, bottom: defaultpadding),
+              child: Column(
+                children: [
+                  Text(
+                    "Finishing Setup",
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  Stepper(
+                    steps: getsteps(),
+                    currentStep: currentStep,
+                    onStepTapped: (step) => setState(() => currentStep = step),
+                    controlsBuilder: (BuildContext context,
+                        ControlsDetails controlsDetails) {
+                      final lastStep = currentStep == getsteps().length - 1;
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: Row(
+                          children: [
+                            if (currentStep != 0)
                               Expanded(
-                                child: ElevatedButton(
-                                  onPressed: controlsDetails.onStepContinue,
-                                  child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
+                                child: OutlinedButton(
+                                  onPressed: controlsDetails.onStepCancel,
+                                  child: const Text('BACK'),
                                 ),
                               ),
-                            ],
-                          ),
-                        );
-                      },
-                      onStepContinue: () async {
-                        final isLastStep = currentStep == getsteps().length - 1;
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: controlsDetails.onStepContinue,
+                                child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    onStepContinue: () async {
+                      final isLastStep = currentStep == getsteps().length - 1;
 
-                        if (isLastStep) {
-                          final completeEmployerProfileController =
-                              Get.find<CompleteEmployerProfileController>();
-                          final userInfoController =
-                              Get.find<UserInfoController>();
-                          final userInfo = userInfoController.userInfo;
+                      if (isLastStep) {
+                        final completeEmployerProfileController =
+                            Get.find<CompleteEmployerProfileController>();
+                        final userInfoController =
+                            Get.find<UserInfoController>();
+                        final userInfo = userInfoController.userInfo;
 
-                          await completeEmployerProfileController
-                              .completeEmployerProfile(
-                                  uuid,
-                                  size,
-                                  pets,
-                                  requirements,
-                                  paymentMethods,
-                                  selectedPaymentFrequency!,
-                                  bio);
+                        await completeEmployerProfileController
+                            .completeEmployerProfile(
+                                uuid,
+                                size,
+                                pets,
+                                requirements,
+                                paymentMethods,
+                                selectedPaymentFrequency!,
+                                bio);
 
-                          final employerProfileData =
-                              await Get.find<EmployerProfileController>()
-                                  .fetchEmployerProfile(userInfo['uuid']);
+                        final employerProfileData =
+                            await Get.find<EmployerProfileController>()
+                                .fetchEmployerProfile(userInfo['uuid']);
 
-                          Get.find<UserInfoController>().employerProfile.value =
-                              employerProfileData!;
+                        Get.find<UserInfoController>().employerProfile.value =
+                            employerProfileData!;
 
-                          Get.to(() => const EmployerDashboardScreen(
-                                initialPage: EmployerDashboardSections.home,
-                              ));
-                        } else {
-                          setState(() => currentStep += 1);
-                        }
-                      },
-                      onStepCancel: currentStep == 0
-                          ? null
-                          : () => setState(() => currentStep -= 1),
-                    ),
-                  ],
-                ),
+                        Get.to(() => const EmployerDashboardScreen(
+                              initialPage: EmployerDashboardSections.home,
+                            ));
+                      } else {
+                        setState(() => currentStep += 1);
+                      }
+                    },
+                    onStepCancel: currentStep == 0
+                        ? null
+                        : () => setState(() => currentStep -= 1),
+                  ),
+                ],
               ),
             ),
           ),

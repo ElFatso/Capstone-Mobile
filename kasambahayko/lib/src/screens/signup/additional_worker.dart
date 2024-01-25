@@ -112,93 +112,90 @@ class WorkerAdditionalScreenState extends State<WorkerAdditionalScreen> {
       };
     }).toList();
     List<String> originalSkills = skills.split(', ').toList();
-    return SafeArea(
-      child: Theme(
-        data: WorkerTheme.theme,
-        child: Scaffold(
-          body: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: defaultpadding, bottom: defaultpadding),
-                child: Column(
-                  children: [
-                    Text(
-                      "Finishing Setup",
-                      style: Theme.of(context).textTheme.titleLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                    Stepper(
-                      steps: getsteps(),
-                      currentStep: currentStep,
-                      onStepTapped: (step) =>
-                          setState(() => currentStep = step),
-                      controlsBuilder: (BuildContext context,
-                          ControlsDetails controlsDetails) {
-                        final lastStep = currentStep == getsteps().length - 1;
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: Row(
-                            children: [
-                              if (currentStep != 0)
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: controlsDetails.onStepCancel,
-                                    child: const Text('BACK'),
-                                  ),
-                                ),
+    return Theme(
+      data: WorkerTheme.theme,
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  top: defaultpadding, bottom: defaultpadding),
+              child: Column(
+                children: [
+                  Text(
+                    "Finishing Setup",
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  Stepper(
+                    steps: getsteps(),
+                    currentStep: currentStep,
+                    onStepTapped: (step) => setState(() => currentStep = step),
+                    controlsBuilder: (BuildContext context,
+                        ControlsDetails controlsDetails) {
+                      final lastStep = currentStep == getsteps().length - 1;
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: Row(
+                          children: [
+                            if (currentStep != 0)
                               Expanded(
-                                child: ElevatedButton(
-                                  onPressed: controlsDetails.onStepContinue,
-                                  child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
+                                child: OutlinedButton(
+                                  onPressed: controlsDetails.onStepCancel,
+                                  child: const Text('BACK'),
                                 ),
                               ),
-                            ],
-                          ),
-                        );
-                      },
-                      onStepContinue: () async {
-                        final isLastStep = currentStep == getsteps().length - 1;
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: controlsDetails.onStepContinue,
+                                child: Text(lastStep ? 'CONFIRM' : 'NEXT'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    onStepContinue: () async {
+                      final isLastStep = currentStep == getsteps().length - 1;
 
-                        if (isLastStep) {
-                          final completeWorkerProfileController =
-                              Get.find<CompleteWorkerProfileController>();
-                          final userInfoController =
-                              Get.find<UserInfoController>();
-                          final userInfo = userInfoController.userInfo;
+                      if (isLastStep) {
+                        final completeWorkerProfileController =
+                            Get.find<CompleteWorkerProfileController>();
+                        final userInfoController =
+                            Get.find<UserInfoController>();
+                        final userInfo = userInfoController.userInfo;
 
-                          await completeWorkerProfileController
-                              .completeWorkerProfile(
-                                  uuid,
-                                  availability,
-                                  bio,
-                                  certifications,
-                                  selectedEducationLevel!,
-                                  hourlyRate,
-                                  languages,
-                                  originalSkills,
-                                  experiences,
-                                  services);
+                        await completeWorkerProfileController
+                            .completeWorkerProfile(
+                                uuid,
+                                availability,
+                                bio,
+                                certifications,
+                                selectedEducationLevel!,
+                                hourlyRate,
+                                languages,
+                                originalSkills,
+                                experiences,
+                                services);
 
-                          final workerProfileData =
-                              await Get.find<WorkerProfileController>()
-                                  .fetchWorkerProfile(userInfo['uuid']);
-                          Get.find<UserInfoController>().workerProfile.value =
-                              workerProfileData!;
+                        final workerProfileData =
+                            await Get.find<WorkerProfileController>()
+                                .fetchWorkerProfile(userInfo['uuid']);
+                        Get.find<UserInfoController>().workerProfile.value =
+                            workerProfileData!;
 
-                          Get.to(() => const WorkerDashboardScreen(
-                                initialPage: WorkerDashboardSections.home,
-                              ));
-                        } else {
-                          setState(() => currentStep += 1);
-                        }
-                      },
-                      onStepCancel: currentStep == 0
-                          ? null
-                          : () => setState(() => currentStep -= 1),
-                    ),
-                  ],
-                ),
+                        Get.to(() => const WorkerDashboardScreen(
+                              initialPage: WorkerDashboardSections.home,
+                            ));
+                      } else {
+                        setState(() => currentStep += 1);
+                      }
+                    },
+                    onStepCancel: currentStep == 0
+                        ? null
+                        : () => setState(() => currentStep -= 1),
+                  ),
+                ],
               ),
             ),
           ),

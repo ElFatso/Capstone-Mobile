@@ -63,11 +63,11 @@ class AppliedListingDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Theme(
-        data: WorkerTheme.theme,
-        child: Scaffold(
-          body: Padding(
+    return Theme(
+      data: WorkerTheme.theme,
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
             padding: const EdgeInsets.all(defaultpadding),
             child: Center(
               child: SingleChildScrollView(
@@ -325,7 +325,7 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                 TimelineTile(
                                   alignment: TimelineAlign.manual,
                                   isFirst: true,
-                                  lineXY: 0.1,
+                                  lineXY: 0.2,
                                   indicatorStyle: IndicatorStyle(
                                     width: 40,
                                     color: greencolor,
@@ -375,7 +375,7 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                   'Screening Passed'))
                                 TimelineTile(
                                   alignment: TimelineAlign.manual,
-                                  lineXY: 0.1,
+                                  lineXY: 0.2,
                                   indicatorStyle: IndicatorStyle(
                                     width: 40,
                                     color: greencolor,
@@ -429,7 +429,7 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                   'Interview Scheduled'))
                                 TimelineTile(
                                   alignment: TimelineAlign.manual,
-                                  lineXY: 0.1,
+                                  lineXY: 0.2,
                                   indicatorStyle: IndicatorStyle(
                                     width: 40,
                                     color: bluecolor,
@@ -590,7 +590,7 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                   'Interview Completed'))
                                 TimelineTile(
                                   alignment: TimelineAlign.manual,
-                                  lineXY: 0.1,
+                                  lineXY: 0.2,
                                   indicatorStyle: IndicatorStyle(
                                     width: 40,
                                     color: greencolor,
@@ -643,7 +643,7 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                   event['event_description'] == 'Job Offer'))
                                 TimelineTile(
                                   alignment: TimelineAlign.manual,
-                                  lineXY: 0.1,
+                                  lineXY: 0.2,
                                   indicatorStyle: IndicatorStyle(
                                     width: 40,
                                     color: bluecolor,
@@ -1066,7 +1066,7 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                 TimelineTile(
                                   alignment: TimelineAlign.manual,
                                   isLast: true,
-                                  lineXY: 0.1,
+                                  lineXY: 0.2,
                                   indicatorStyle: IndicatorStyle(
                                     width: 40,
                                     color: greencolor,

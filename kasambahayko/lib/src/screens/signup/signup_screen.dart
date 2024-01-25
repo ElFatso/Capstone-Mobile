@@ -10,22 +10,20 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return SafeArea(
-      child: Theme(
-        data: StandardTheme.theme,
-        child: Scaffold(
-          body: Center(
-            child: SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.all(defaultsize),
-                child: Column(
-                  children: [
-                    SignupHeaderWidget(size: size),
-                    SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: const SignupForm())
-                  ],
-                ),
+    return Theme(
+      data: StandardTheme.theme,
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(defaultsize),
+              child: Column(
+                children: [
+                  SignupHeaderWidget(size: size),
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: const SignupForm())
+                ],
               ),
             ),
           ),

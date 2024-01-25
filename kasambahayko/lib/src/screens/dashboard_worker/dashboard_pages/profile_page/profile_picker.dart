@@ -91,16 +91,12 @@ class ImageSelectionScreen extends GetView {
   void getImage(ImageSource source) async {
     final result = await imageUploadController.uploadProfileImage(source);
     if (result['success']) {
-      // The image was successfully uploaded
       final imageUrl = result['data']['imageUrl'];
 
-      // Remove 'server' from the imageUrl
       final modifiedImageUrl = imageUrl.replaceAll('server', '');
 
-      // Construct the full URL
       final fullImageUrl = '${ApiConstants.baseUrl}$modifiedImageUrl';
 
-      // Update the user's image URL
       final userInfoController = Get.find<UserInfoController>();
       userInfoController.userInfo['imageUrl'] = fullImageUrl;
 

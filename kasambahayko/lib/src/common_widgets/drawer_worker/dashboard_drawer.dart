@@ -26,16 +26,21 @@ class DashboardDrawerState extends State<DashboardDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const DashboardHeader(
-              appBarHeight: 80,
-            ),
-            DrawerList(
+      backgroundColor: secondarycolor,
+      child: SafeArea(
+        child: Container(
+          color: whitecolor,
+          child: Column(
+            children: [
+              const DashboardHeader(
+                appBarHeight: 80,
+              ),
+              DrawerList(
                 currentPage: widget.currentPage,
-                onMenuItemTap: widget.onMenuItemTap),
-          ],
+                onMenuItemTap: widget.onMenuItemTap,
+              ),
+            ],
+          ),
         ),
       ),
     );

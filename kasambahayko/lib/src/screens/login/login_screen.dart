@@ -10,20 +10,18 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return SafeArea(
-      child: Theme(
-        data: StandardTheme.theme,
-        child: Scaffold(
-          body: Center(
-            child: SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.all(defaultsize),
-                child: Column(
-                  children: [
-                    LoginHeaderWidget(size: size),
-                    LoginForm(),
-                  ],
-                ),
+    return Theme(
+      data: StandardTheme.theme,
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(defaultsize),
+              child: Column(
+                children: [
+                  LoginHeaderWidget(size: size),
+                  LoginForm(),
+                ],
               ),
             ),
           ),

@@ -14,63 +14,61 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    return SafeArea(
-      child: Theme(
-        data: StandardTheme.theme,
-        child: Scaffold(
-            backgroundColor: whitecolor,
-            body: Container(
-                padding: const EdgeInsets.all(defaultsize),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Image(
-                      image: const AssetImage('assets/images/welcome.png'),
-                      height: height * 0.6,
-                    ),
-                    Column(
-                      children: [
-                        Text(welcomeTitle,
-                            style: Theme.of(context).textTheme.displayLarge),
-                        Text(
-                          welcomeDescription,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          textAlign: TextAlign.center,
+    return Theme(
+      data: StandardTheme.theme,
+      child: Scaffold(
+          backgroundColor: whitecolor,
+          body: Container(
+              padding: const EdgeInsets.all(defaultsize),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Image(
+                    image: const AssetImage('assets/images/welcome.png'),
+                    height: height * 0.6,
+                  ),
+                  Column(
+                    children: [
+                      Text(welcomeTitle,
+                          style: Theme.of(context).textTheme.displayLarge),
+                      Text(
+                        welcomeDescription,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            final configurationsController =
+                                Get.put(ConfigurationsController());
+                            await configurationsController
+                                .fetchConfigurations();
+                            Get.to(() => const LoginScreen());
+                          },
+                          child: Text(login.toUpperCase()),
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () async {
-                              final configurationsController =
-                                  Get.put(ConfigurationsController());
-                              await configurationsController
-                                  .fetchConfigurations();
-                              Get.to(() => const LoginScreen());
-                            },
-                            child: Text(login.toUpperCase()),
-                          ),
+                      ),
+                      const SizedBox(width: 10.0),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final configurationsController =
+                                Get.put(ConfigurationsController());
+                            await configurationsController
+                                .fetchConfigurations();
+                            Get.to(() => const SignupScreen());
+                          },
+                          child: Text(signup.toUpperCase()),
                         ),
-                        const SizedBox(width: 10.0),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final configurationsController =
-                                  Get.put(ConfigurationsController());
-                              await configurationsController
-                                  .fetchConfigurations();
-                              Get.to(() => const SignupScreen());
-                            },
-                            child: Text(signup.toUpperCase()),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ))),
-      ),
+                      ),
+                    ],
+                  ),
+                ],
+              ))),
     );
   }
 }

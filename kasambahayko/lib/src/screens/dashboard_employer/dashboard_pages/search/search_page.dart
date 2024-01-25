@@ -46,6 +46,7 @@ class SearchPage extends StatelessWidget {
                             () => FilterPage(
                               selectedServiceNames:
                                   controller.selectedServiceNames,
+                              selectedDocuments: controller.selectedDocuments,
                             ),
                             transition: Transition.upToDown,
                           );
@@ -77,6 +78,7 @@ class SearchPage extends StatelessWidget {
                         final servicesList = worker['services'];
                         final languagesList = worker['languages'];
                         final experience = worker['work_experience'];
+                        final documents = worker['documents'];
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 12),
@@ -237,6 +239,7 @@ class SearchPage extends StatelessWidget {
                                               experience: experience,
                                               servicesList: servicesList,
                                               languagesList: languagesList,
+                                              documents: documents,
                                             ),
                                         transition: Transition.rightToLeft);
                                   },

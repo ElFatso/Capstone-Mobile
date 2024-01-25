@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kasambahayko/src/common_widgets/card/custom_card.dart';
+import 'package:kasambahayko/src/common_widgets/highlight_text/status_highlight.dart';
 import 'package:kasambahayko/src/common_widgets/input_fields/single_item_dropdown.dart';
 import 'package:kasambahayko/src/constants/colors.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
@@ -9,6 +11,10 @@ import 'package:kasambahayko/src/controllers/user_controllers/user_contact_contr
 import 'package:kasambahayko/src/controllers/user_controllers/worker_background_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_experience_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_info_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/worker_valid_documents_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/worker_valid_documents_delete.dart';
+import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/profile_page/document_details.dart';
+import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/profile_page/document_picker.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/profile_page/profile_picker.dart';
 import 'package:multiselect/multiselect.dart';
 
@@ -742,16 +748,785 @@ class ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 16),
                   ],
                 ),
-                const ExpansionTile(
-                    title: Text("Documents",
+                ExpansionTile(
+                    title: const Text("Documents",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         )),
                     children: <Widget>[
-                      SizedBox(height: 12),
-                      SizedBox(height: 16),
+                      Obx(
+                        () {
+                          final documentsController =
+                              Get.find<DocumentsController>();
+                          final documents = documentsController.documents;
+
+                          List getDocumentsByType(String type) {
+                            return documents
+                                .where((document) => document['type'] == type)
+                                .toList();
+                          }
+
+                          List resumeDocuments = getDocumentsByType('resume');
+                          List barangayClearanceDocuments =
+                              getDocumentsByType('barangay clearance');
+                          List policeClearanceDocuments =
+                              getDocumentsByType('police clearance');
+                          List nbiClearanceDocuments =
+                              getDocumentsByType('nbi clearance');
+
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 16, right: 16),
+                            child: Column(
+                              children: [
+                                if (getDocumentsByType('resume').isEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                Text('RESUME',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'resume';
+                                                      Get.to(
+                                                          () =>
+                                                              DocumentUploadScreen(
+                                                                documentType:
+                                                                    documentType,
+                                                              ),
+                                                          transition:
+                                                              Transition.zoom);
+                                                    },
+                                                    child: const Text(
+                                                        'Upload File'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('resume').isNotEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                if (resumeDocuments[0]
+                                                        ['status'] ==
+                                                    'verified')
+                                                  const StatusHighlight(
+                                                    label: 'Resume:',
+                                                    highlightColor: greencolor,
+                                                    text: 'Verified',
+                                                  )
+                                                else if (resumeDocuments[0]
+                                                        ['status'] ==
+                                                    'unverified')
+                                                  const StatusHighlight(
+                                                    label: 'Resume:',
+                                                    highlightColor: orangecolor,
+                                                    text: 'Pending',
+                                                  )
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      final id =
+                                                          resumeDocuments[0][
+                                                                  'document_id']
+                                                              .toString();
+
+                                                      final deleteDocumentsController =
+                                                          Get.find<
+                                                              DeleteDocumentsController>();
+                                                      await deleteDocumentsController
+                                                          .deleteDocument(id);
+
+                                                      final uuid = Get.find<
+                                                              UserInfoController>()
+                                                          .userInfo['uuid'];
+
+                                                      final documentsController =
+                                                          Get.find<
+                                                              DocumentsController>();
+                                                      await documentsController
+                                                          .fetchDocuments(uuid);
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'Resume';
+                                                      final fileUrls =
+                                                          resumeDocuments[0]
+                                                              ['fileUrl'];
+                                                      Get.to(
+                                                          () => DocumentDetails(
+                                                                documentType:
+                                                                    documentType,
+                                                                fileUrls:
+                                                                    fileUrls,
+                                                              ),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    },
+                                                    child: const Text('View'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('barangay clearance')
+                                    .isEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                Text('BARANGAY CLEARANCE',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'barangay clearance';
+                                                      Get.to(
+                                                          () =>
+                                                              DocumentUploadScreen(
+                                                                documentType:
+                                                                    documentType,
+                                                              ),
+                                                          transition:
+                                                              Transition.zoom);
+                                                    },
+                                                    child: const Text(
+                                                        'Upload File'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('barangay clearance')
+                                    .isNotEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                if (barangayClearanceDocuments[
+                                                        0]['status'] ==
+                                                    'verified')
+                                                  const StatusHighlight(
+                                                    label:
+                                                        'Barangay Clearance:',
+                                                    highlightColor: greencolor,
+                                                    text: 'Verified',
+                                                  )
+                                                else if (barangayClearanceDocuments[
+                                                        0]['status'] ==
+                                                    'unverified')
+                                                  const StatusHighlight(
+                                                    label:
+                                                        'Barangay Clearance:',
+                                                    highlightColor: orangecolor,
+                                                    text: 'Pending',
+                                                  )
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      final id =
+                                                          barangayClearanceDocuments[
+                                                                      0][
+                                                                  'document_id']
+                                                              .toString();
+
+                                                      final deleteDocumentsController =
+                                                          Get.find<
+                                                              DeleteDocumentsController>();
+                                                      await deleteDocumentsController
+                                                          .deleteDocument(id);
+
+                                                      final uuid = Get.find<
+                                                              UserInfoController>()
+                                                          .userInfo['uuid'];
+
+                                                      final documentsController =
+                                                          Get.find<
+                                                              DocumentsController>();
+                                                      await documentsController
+                                                          .fetchDocuments(uuid);
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'Barangay Clearance';
+                                                      final fileUrls =
+                                                          barangayClearanceDocuments[
+                                                              0]['fileUrl'];
+                                                      Get.to(
+                                                          () => DocumentDetails(
+                                                                documentType:
+                                                                    documentType,
+                                                                fileUrls:
+                                                                    fileUrls,
+                                                              ),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    },
+                                                    child: const Text('View'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('police clearance')
+                                    .isEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                Text('POLICE CLEARANCE',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'police clearance';
+                                                      Get.to(
+                                                          () =>
+                                                              DocumentUploadScreen(
+                                                                documentType:
+                                                                    documentType,
+                                                              ),
+                                                          transition:
+                                                              Transition.zoom);
+                                                    },
+                                                    child: const Text(
+                                                        'Upload File'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('police clearance')
+                                    .isNotEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                if (policeClearanceDocuments[0]
+                                                        ['status'] ==
+                                                    'verified')
+                                                  const StatusHighlight(
+                                                    label: 'Police Clearance:',
+                                                    highlightColor: greencolor,
+                                                    text: 'Verified',
+                                                  )
+                                                else if (policeClearanceDocuments[
+                                                        0]['status'] ==
+                                                    'unverified')
+                                                  const StatusHighlight(
+                                                    label: 'Police Clearance:',
+                                                    highlightColor: orangecolor,
+                                                    text: 'Pending',
+                                                  )
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      final id =
+                                                          policeClearanceDocuments[
+                                                                      0][
+                                                                  'document_id']
+                                                              .toString();
+
+                                                      final deleteDocumentsController =
+                                                          Get.find<
+                                                              DeleteDocumentsController>();
+                                                      await deleteDocumentsController
+                                                          .deleteDocument(id);
+
+                                                      final uuid = Get.find<
+                                                              UserInfoController>()
+                                                          .userInfo['uuid'];
+
+                                                      final documentsController =
+                                                          Get.find<
+                                                              DocumentsController>();
+                                                      await documentsController
+                                                          .fetchDocuments(uuid);
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'Police Clearance';
+                                                      final fileUrls =
+                                                          policeClearanceDocuments[
+                                                              0]['fileUrl'];
+                                                      Get.to(
+                                                          () => DocumentDetails(
+                                                                documentType:
+                                                                    documentType,
+                                                                fileUrls:
+                                                                    fileUrls,
+                                                              ),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    },
+                                                    child: const Text('View'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('nbi clearance').isEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                Text('NBI CLEARANCE',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'nbi clearance';
+                                                      Get.to(
+                                                          () =>
+                                                              DocumentUploadScreen(
+                                                                documentType:
+                                                                    documentType,
+                                                              ),
+                                                          transition:
+                                                              Transition.zoom);
+                                                    },
+                                                    child: const Text(
+                                                        'Upload File'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('nbi clearance')
+                                    .isNotEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                if (nbiClearanceDocuments[0]
+                                                        ['status'] ==
+                                                    'verified')
+                                                  const StatusHighlight(
+                                                    label: 'NBI Clearance:',
+                                                    highlightColor: greencolor,
+                                                    text: 'Verified',
+                                                  )
+                                                else if (nbiClearanceDocuments[
+                                                        0]['status'] ==
+                                                    'unverified')
+                                                  const StatusHighlight(
+                                                    label: 'NBI Clearance:',
+                                                    highlightColor: orangecolor,
+                                                    text: 'Pending',
+                                                  )
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      final id =
+                                                          nbiClearanceDocuments[
+                                                                      0][
+                                                                  'document_id']
+                                                              .toString();
+
+                                                      final deleteDocumentsController =
+                                                          Get.find<
+                                                              DeleteDocumentsController>();
+                                                      await deleteDocumentsController
+                                                          .deleteDocument(id);
+
+                                                      final uuid = Get.find<
+                                                              UserInfoController>()
+                                                          .userInfo['uuid'];
+
+                                                      final documentsController =
+                                                          Get.find<
+                                                              DocumentsController>();
+                                                      await documentsController
+                                                          .fetchDocuments(uuid);
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'NBI Clearance';
+                                                      final fileUrls =
+                                                          nbiClearanceDocuments[
+                                                              0]['fileUrl'];
+                                                      Get.to(
+                                                          () => DocumentDetails(
+                                                                documentType:
+                                                                    documentType,
+                                                                fileUrls:
+                                                                    fileUrls,
+                                                              ),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    },
+                                                    child: const Text('View'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ]),
               ],
             ),

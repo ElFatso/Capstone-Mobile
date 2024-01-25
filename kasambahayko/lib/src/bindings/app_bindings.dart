@@ -48,6 +48,8 @@ import 'package:kasambahayko/src/controllers/post_creation/edit_post_controller.
 import 'package:kasambahayko/src/controllers/post_creation/job_post_controller.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/login_controller.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/worker_valid_documents_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/worker_valid_documents_delete.dart';
 
 class AppBindings extends Bindings {
   @override
@@ -88,6 +90,8 @@ class AppBindings extends Bindings {
     Get.put(WorkerInfoController());
     Get.put(WorkerExperienceController());
     Get.put(WorkerBackgroundController());
+    Get.put(DocumentsController());
+    Get.put(DeleteDocumentsController());
     Get.put(JobPostsController());
     Get.put(JobListingsController());
     Get.put(AppliedJobsController());

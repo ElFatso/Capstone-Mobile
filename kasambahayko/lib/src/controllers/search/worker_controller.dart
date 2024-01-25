@@ -10,6 +10,7 @@ class WorkerController extends GetxController {
   final RxList<Map<String, dynamic>> workers = <Map<String, dynamic>>[].obs;
   final RxString error = ''.obs;
   final RxList<String> selectedServiceNames = <String>[].obs;
+  final RxList<String> selectedDocuments = <String>[].obs;
   final RxList<Map<String, dynamic>> filteredWorkers =
       <Map<String, dynamic>>[].obs;
 
@@ -39,36 +40,40 @@ class WorkerController extends GetxController {
     }
   }
 
-  void applyServiceFilter() {
-    final selectedNames = selectedServiceNames.toSet();
-    log("Selected Service Names: $selectedNames");
+  void applyCombinedFilter() {
+    final selectedService = selectedServiceNames.toSet();
+    final selectedDocumentCategories = selectedDocuments.toSet();
 
-    if (selectedNames.isEmpty) {
+    log("Selected Service Names: $selectedServiceNames");
+    log("Selected Document Categories: $selectedDocumentCategories");
+
+    if (selectedService.isEmpty && selectedDocumentCategories.isEmpty) {
+      // No filters selected, display all workers
       filteredWorkers.assignAll(workers);
     } else {
-      final filtered = workers.where((worker) {
+      // Apply service and document filter
+      final combinedFiltered = workers.where((worker) {
+        // Apply service filter
         final servicesList = worker['services'] ?? [];
-        log("Worker's Services: $servicesList");
         final workerServiceNames =
             servicesList.map((service) => service['service_name']).toSet();
+        final serviceFilter = selectedServiceNames.isEmpty ||
+            selectedServiceNames.every(
+                (selectedName) => workerServiceNames.contains(selectedName));
 
-        log("Worker's Service Names: $workerServiceNames");
+        // Apply document filter
+        final documentsList = worker['documents'] ?? [];
+        final documentCategories =
+            documentsList.map((documentType) => documentType['type']).toSet();
+        final documentFilter = selectedDocumentCategories.isEmpty ||
+            selectedDocumentCategories.every((selectedCategory) =>
+                documentCategories.contains(selectedCategory));
 
-        // Check if the worker provides all of the selected services.
-        final hasMatchingService = selectedNames
-            .every((selectedName) => workerServiceNames.contains(selectedName));
-
-        if (hasMatchingService) {
-          log("Worker with matching services: $worker");
-        } else {
-          log("Worker with no matching services: $worker");
-        }
-
-        return hasMatchingService;
+        return serviceFilter && documentFilter;
       }).toList();
 
-      filteredWorkers.assignAll(filtered);
-      log("Filtered Workers: ${filtered.toString()}");
+      filteredWorkers.assignAll(combinedFiltered);
+      log("Combined Filtered Workers: ${combinedFiltered.toString()}");
     }
   }
 

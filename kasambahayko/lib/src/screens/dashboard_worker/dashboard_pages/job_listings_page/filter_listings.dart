@@ -122,11 +122,11 @@ class FilterListingsState extends State<FilterListings> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Theme(
-        data: WorkerTheme.theme,
-        child: Scaffold(
-          body: Padding(
+    return Theme(
+      data: WorkerTheme.theme,
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
             padding: const EdgeInsets.all(defaultpadding),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
