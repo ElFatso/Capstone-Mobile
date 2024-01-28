@@ -24,6 +24,12 @@ import 'package:kasambahayko/src/controllers/application_process/timeline_create
 import 'package:kasambahayko/src/controllers/auth_controllers/additional_employer.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/additional_worker.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/signup_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/employer_booking_details_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/employer_booking_request_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/employer_bookings_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_details_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_bookings_controller.dart';
 import 'package:kasambahayko/src/controllers/configurations_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/applied_listings_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/creation_applied_listings_controller.dart';
@@ -32,6 +38,9 @@ import 'package:kasambahayko/src/controllers/job_listings/job_listings_controlle
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_accept_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_decline_controller.dart';
+import 'package:kasambahayko/src/controllers/messaging/messaging_controller.dart';
+import 'package:kasambahayko/src/controllers/messaging/messaging_history_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/user_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/user_profile_image_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_background_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_experience_controller.dart';
@@ -57,6 +66,7 @@ class AppBindings extends Bindings {
     Get.put(LoginController());
     Get.put(RegistrationController());
     Get.put(ConfigurationsController());
+    Get.put(UserController());
     Get.put(JobApplicantsController());
     Get.put(StartApplicationController());
     Get.put(ScreeningResultsController());
@@ -78,6 +88,12 @@ class AppBindings extends Bindings {
     Get.put(AcceptJobOfferController());
     Get.put(DeclineJobOfferController());
     Get.put(HiredApplicantController());
+    Get.put(WorkerBookingsController());
+    Get.put(WorkerBookingDetailsController());
+    Get.put(WorkerBookingRequestController());
+    Get.put(EmployerBookingsController());
+    Get.put(EmployerBookingDetailsController());
+    Get.put(EmployerBookingRequestController());
     Get.put(CompleteEmployerProfileController());
     Get.put(CompleteWorkerProfileController());
     Get.put(UserInfoController());
@@ -105,5 +121,7 @@ class AppBindings extends Bindings {
     Get.put(StepController());
     Get.put(UpdateStepController());
     Get.put(ResetStepController());
+    Get.put(ChatController());
+    Get.put(ChatHistoryController());
   }
 }

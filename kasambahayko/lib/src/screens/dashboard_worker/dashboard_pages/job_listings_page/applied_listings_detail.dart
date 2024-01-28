@@ -16,10 +16,11 @@ import 'package:kasambahayko/src/controllers/job_listings/job_listings_controlle
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_accept_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_decline_controller.dart';
+import 'package:kasambahayko/src/routing/api/api_constants.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_screen.dart';
 import 'package:kasambahayko/src/utils/theme_worker.dart';
 import 'package:timeline_tile/timeline_tile.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class AppliedListingDetailsScreen extends StatelessWidget {
   final String profileUrl;
@@ -480,6 +481,17 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                                 if (scheduledInterviewsController
                                                     .scheduledInterviews
                                                     .isNotEmpty) {
+                                                  final userInfo = Get.find<
+                                                          UserInfoController>()
+                                                      .userInfo;
+                                                  final firstName =
+                                                      userInfo['firstName']
+                                                          .toString();
+                                                  final lastName =
+                                                      userInfo['lastName']
+                                                          .toString();
+                                                  final uuid = userInfo['uuid']
+                                                      .toString();
                                                   final scheduled = Get.find<
                                                           ScheduledApplicantsController>()
                                                       .scheduledInterviews[0];
@@ -492,7 +504,10 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                                           'scheduled_date'];
                                                   final link = scheduled[
                                                       'interview_link'];
-                                                  Uri url = Uri.parse(link);
+
+                                                  final linkParts =
+                                                      link.split('/');
+                                                  final callId = linkParts.last;
 
                                                   List<String> timeComponents =
                                                       scheduledTime.split(':');
@@ -548,7 +563,7 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                                                 height: 4),
                                                             Text.rich(
                                                               TextSpan(
-                                                                text: '$url',
+                                                                text: link,
                                                                 style:
                                                                     const TextStyle(
                                                                   color:
@@ -565,10 +580,25 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                                                     TapGestureRecognizer()
                                                                       ..onTap =
                                                                           () {
-                                                                        launchUrl(
-                                                                            url,
-                                                                            mode:
-                                                                                LaunchMode.externalNonBrowserApplication);
+                                                                        Get.to(
+                                                                          () =>
+                                                                              ZegoUIKitPrebuiltCall(
+                                                                            appID:
+                                                                                ApiConstants.appId,
+                                                                            appSign:
+                                                                                ApiConstants.appSign,
+                                                                            userID:
+                                                                                uuid,
+                                                                            userName:
+                                                                                '$firstName $lastName',
+                                                                            callID:
+                                                                                callId,
+                                                                            config:
+                                                                                ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall(),
+                                                                          ),
+                                                                          transition:
+                                                                              Transition.fade,
+                                                                        );
                                                                       },
                                                               ),
                                                             ),

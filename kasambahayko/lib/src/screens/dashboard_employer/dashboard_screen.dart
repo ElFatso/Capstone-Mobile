@@ -4,7 +4,7 @@ import 'package:kasambahayko/src/common_widgets/drawer_employer/dashboard_drawer
 import 'package:kasambahayko/src/common_widgets/drawer_employer/dashboard_sections.dart';
 import 'package:kasambahayko/src/constants/colors.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/login_controller.dart';
-import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/bookings_page.dart';
+import 'package:kasambahayko/src/screens/dashboard_employer/bookings_page/bookings_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/home_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/notifications_page.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/postings/application_review.dart';
@@ -48,7 +48,7 @@ class EmployerDashboardScreenState extends State<EmployerDashboardScreen> {
           Get.off(() => const LoginScreen());
         });
       } else {
-        // Handle other sections if needed
+        currentPage = section;
       }
     });
     Navigator.pop(context);

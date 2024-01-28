@@ -216,7 +216,6 @@ class SearchPage extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-                                const SizedBox(width: 12),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(

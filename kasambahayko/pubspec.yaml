@@ -20,19 +20,17 @@ dependencies:
   image_picker: ^1.0.4
   file_picker: ^6.1.1
   intl: ^0.18.1
-  mysql1: ^0.20.0
-  http: ^1.1.0
   dio: ^5.3.3
-  flutter_image_compress: ^2.0.4
-  conditional_builder_null_safety: ^0.0.6
   multiselect: ^0.1.0
   path: ^1.8.3
-  url_launcher: ^6.2.1
+  # url_launcher: ^6.2.1
   timeline_tile: ^2.0.0
   timeago: ^3.6.0
   photo_view: ^0.14.0
   path_provider: ^2.1.1
   flutter_secure_storage: ^9.0.0
+  socket_io_client: ^2.0.3+1
+  zego_uikit_prebuilt_call: ^4.1.6
 
 dev_dependencies:
   flutter_test:

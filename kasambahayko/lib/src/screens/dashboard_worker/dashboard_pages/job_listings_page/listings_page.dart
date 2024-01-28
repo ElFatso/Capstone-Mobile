@@ -45,6 +45,7 @@ class ListingsPage extends StatelessWidget {
         child: Scaffold(
           body: Column(
             children: [
+              const SizedBox(height: 12),
               CustomCard(
                 child: SizedBox(
                   width: double.infinity,

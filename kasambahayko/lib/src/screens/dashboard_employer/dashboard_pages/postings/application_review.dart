@@ -38,7 +38,7 @@ import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/post
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/postings/offer_history.dart';
 import 'package:kasambahayko/src/utils/theme_employer.dart';
 import 'package:multiselect/multiselect.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class ApplicationsPage extends StatefulWidget {
   const ApplicationsPage({Key? key}) : super(key: key);
@@ -974,11 +974,18 @@ class ScheduledInterviewsExpansionTile extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: controller.scheduledInterviews.length,
                 itemBuilder: (context, index) {
+                  final userInfo = Get.find<UserInfoController>().userInfo;
+                  final first = userInfo['firstName'].toString();
+                  final last = userInfo['lastName'].toString();
+                  final uuid = userInfo['uuid'].toString();
+
                   final scheduled = controller.scheduledInterviews[index];
                   final scheduledTime = scheduled['scheduled_time'];
                   final scheduledDate = scheduled['scheduled_date'];
                   final link = scheduled['interview_link'];
-                  Uri url = Uri.parse(link);
+
+                  final linkParts = link.split('/');
+                  final callId = linkParts.last;
 
                   final date = DateTime.parse(scheduledDate);
                   final formattedAppDate =
@@ -1051,7 +1058,7 @@ class ScheduledInterviewsExpansionTile extends StatelessWidget {
                             ),
                             Text.rich(
                               TextSpan(
-                                text: '$url',
+                                text: link,
                                 style: const TextStyle(
                                   color: bluecolor,
                                   fontSize: 12,
@@ -1060,9 +1067,18 @@ class ScheduledInterviewsExpansionTile extends StatelessWidget {
                                 ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    launchUrl(url,
-                                        mode: LaunchMode
-                                            .externalNonBrowserApplication);
+                                    Get.to(
+                                      () => ZegoUIKitPrebuiltCall(
+                                        appID: ApiConstants.appId,
+                                        appSign: ApiConstants.appSign,
+                                        userID: uuid,
+                                        userName: '$first $last',
+                                        callID: callId,
+                                        config: ZegoUIKitPrebuiltCallConfig
+                                            .oneOnOneVideoCall(),
+                                      ),
+                                      transition: Transition.fade,
+                                    );
                                   },
                               ),
                             ),

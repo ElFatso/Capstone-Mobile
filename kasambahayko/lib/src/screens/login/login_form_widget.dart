@@ -7,6 +7,8 @@ import 'package:kasambahayko/src/common_widgets/input_fields/email_input_field.d
 import 'package:kasambahayko/src/common_widgets/input_fields/password_input_field.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
 import 'package:kasambahayko/src/constants/text_strings.dart';
+import 'package:kasambahayko/src/controllers/bookings/employer_bookings_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_bookings_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/applied_listings_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/job_listings_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/employer_profile_controller.dart';
@@ -14,6 +16,7 @@ import 'package:kasambahayko/src/controllers/search/worker_controller.dart';
 import 'package:kasambahayko/src/controllers/post_creation/job_post_controller.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/login_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/user_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_profile_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_valid_documents_controller.dart';
 import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_screen.dart';
@@ -82,6 +85,11 @@ class LoginForm extends StatelessWidget {
                     userInfo['distances'] = distances;
 
                     Get.find<UserInfoController>().userInfo.value = userInfo;
+
+                    final userController = Get.find<UserController>();
+                    userController
+                        .fetchUserIdByUuid(userInfo['uuid'].toString());
+
                     final jobPostsController = Get.find<JobPostsController>();
                     jobPostsController.fetchJobPosts(userInfo['uuid']);
 
@@ -100,10 +108,12 @@ class LoginForm extends StatelessWidget {
                         final employerProfileData =
                             await Get.find<EmployerProfileController>()
                                 .fetchEmployerProfile(userInfo['uuid']);
-
                         Get.find<UserInfoController>().employerProfile.value =
                             employerProfileData!;
-
+                        final employerBookingsController =
+                            Get.find<EmployerBookingsController>();
+                        await employerBookingsController.fetchEmployerBookings(
+                            userController.userId.toString());
                         Get.to(() => const EmployerDashboardScreen(
                               initialPage: EmployerDashboardSections.home,
                             ));
@@ -117,6 +127,10 @@ class LoginForm extends StatelessWidget {
                             Get.find<DocumentsController>();
                         await documentsController
                             .fetchDocuments(userInfo['uuid']);
+                        final workerBookingsController =
+                            Get.find<WorkerBookingsController>();
+                        await workerBookingsController.fetchWorkerBookings(
+                            userController.userId.toString());
                         Get.to(() => const WorkerDashboardScreen(
                               initialPage: WorkerDashboardSections.home,
                             ));
