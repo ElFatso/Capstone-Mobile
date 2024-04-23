@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kasambahayko/src/common_widgets/card/custom_card.dart';
 import 'package:kasambahayko/src/common_widgets/drawer_worker/dashboard_sections.dart';
 import 'package:kasambahayko/src/common_widgets/input_fields/single_item_dropdown.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
@@ -9,7 +10,11 @@ import 'package:kasambahayko/src/controllers/auth_controllers/additional_worker.
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/user_profile_image_controller.dart';
 import 'package:kasambahayko/src/controllers/user_controllers/worker_profile_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/worker_valid_documents_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/worker_valid_documents_delete.dart';
 import 'package:kasambahayko/src/routing/api/api_constants.dart';
+import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/profile_page/document_details.dart';
+import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/profile_page/document_picker.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_screen.dart';
 import 'package:kasambahayko/src/utils/theme_worker.dart';
 import 'package:multiselect/multiselect.dart';
@@ -431,65 +436,817 @@ class WorkerAdditionalScreenState extends State<WorkerAdditionalScreen> {
           title: const Text("Verifcation"),
           content: Column(
             children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              ExpansionTile(
+                title: const Text("Profile Picture",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    )),
+                children: <Widget>[
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.all(12),
+                          ),
+                          onPressed: () {
+                            getImage(ImageSource.camera);
+                          },
+                          child: Text(
+                            "Take a Photo",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.all(12),
+                          ),
+                          onPressed: () {
+                            getImage(ImageSource.gallery);
+                          },
+                          child: Text(
+                            "Choose from Gallery",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: const Color(0xFFFAFAFA),
+                          child: Obx(() {
+                            final userInfoController =
+                                Get.find<UserInfoController>();
+                            final imageUrl = userInfoController
+                                .userInfo['imageUrl']
+                                .toString();
+                            return ClipOval(
+                              child: SizedBox(
+                                width: 120,
+                                height: 120,
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
-                  padding: const EdgeInsets.all(12),
-                ),
-                onPressed: () {
-                  getImage(ImageSource.camera);
-                },
-                child: Text(
-                  "Take a Photo",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
+                ],
               ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                ),
-                onPressed: () {
-                  getImage(ImageSource.gallery);
-                },
-                child: Text(
-                  "Choose from Gallery",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 12),
-              CircleAvatar(
-                radius: 60,
-                backgroundColor: const Color(0xFFFAFAFA),
-                child: Obx(() {
-                  final userInfoController = Get.find<UserInfoController>();
-                  final imageUrl =
-                      userInfoController.userInfo['imageUrl'].toString();
-                  return ClipOval(
-                    child: SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
+              ExpansionTile(
+                  title: const Text("Documents",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      )),
+                  children: <Widget>[
+                    SingleChildScrollView(
+                      child: Obx(
+                        () {
+                          final documentsController =
+                              Get.find<DocumentsController>();
+                          final documents = documentsController.documents;
+
+                          List getDocumentsByType(String type) {
+                            return documents
+                                .where((document) => document['type'] == type)
+                                .toList();
+                          }
+
+                          List resumeDocuments = getDocumentsByType('resume');
+                          List barangayClearanceDocuments =
+                              getDocumentsByType('barangay clearance');
+                          List policeClearanceDocuments =
+                              getDocumentsByType('police clearance');
+                          List nbiClearanceDocuments =
+                              getDocumentsByType('nbi clearance');
+
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 16, right: 16),
+                            child: Column(
+                              children: [
+                                if (getDocumentsByType('resume').isEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                Text('RESUME',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'resume';
+                                                      Get.to(
+                                                          () =>
+                                                              DocumentUploadScreen(
+                                                                documentType:
+                                                                    documentType,
+                                                              ),
+                                                          transition:
+                                                              Transition.zoom);
+                                                    },
+                                                    child: const Text(
+                                                        'Upload File'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('resume').isNotEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text('Resume:',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      final id =
+                                                          resumeDocuments[0][
+                                                                  'document_id']
+                                                              .toString();
+
+                                                      final deleteDocumentsController =
+                                                          Get.find<
+                                                              DeleteDocumentsController>();
+                                                      await deleteDocumentsController
+                                                          .deleteDocument(id);
+
+                                                      final uuid = Get.find<
+                                                              UserInfoController>()
+                                                          .userInfo['uuid'];
+
+                                                      final documentsController =
+                                                          Get.find<
+                                                              DocumentsController>();
+                                                      await documentsController
+                                                          .fetchDocuments(uuid);
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'Resume';
+                                                      final fileUrls =
+                                                          resumeDocuments[0]
+                                                              ['fileUrl'];
+                                                      Get.to(
+                                                          () => DocumentDetails(
+                                                                documentType:
+                                                                    documentType,
+                                                                fileUrls:
+                                                                    fileUrls,
+                                                              ),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    },
+                                                    child: const Text('View'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('barangay clearance')
+                                    .isEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                Text('BARANGAY CLEARANCE',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'barangay clearance';
+                                                      Get.to(
+                                                          () =>
+                                                              DocumentUploadScreen(
+                                                                documentType:
+                                                                    documentType,
+                                                              ),
+                                                          transition:
+                                                              Transition.zoom);
+                                                    },
+                                                    child: const Text(
+                                                        'Upload File'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('barangay clearance')
+                                    .isNotEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text('Barangay Clearance:',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      final id =
+                                                          barangayClearanceDocuments[
+                                                                      0][
+                                                                  'document_id']
+                                                              .toString();
+
+                                                      final deleteDocumentsController =
+                                                          Get.find<
+                                                              DeleteDocumentsController>();
+                                                      await deleteDocumentsController
+                                                          .deleteDocument(id);
+
+                                                      final uuid = Get.find<
+                                                              UserInfoController>()
+                                                          .userInfo['uuid'];
+
+                                                      final documentsController =
+                                                          Get.find<
+                                                              DocumentsController>();
+                                                      await documentsController
+                                                          .fetchDocuments(uuid);
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'Barangay Clearance';
+                                                      final fileUrls =
+                                                          barangayClearanceDocuments[
+                                                              0]['fileUrl'];
+                                                      Get.to(
+                                                          () => DocumentDetails(
+                                                                documentType:
+                                                                    documentType,
+                                                                fileUrls:
+                                                                    fileUrls,
+                                                              ),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    },
+                                                    child: const Text('View'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('police clearance')
+                                    .isEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                Text('POLICE CLEARANCE',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'police clearance';
+                                                      Get.to(
+                                                          () =>
+                                                              DocumentUploadScreen(
+                                                                documentType:
+                                                                    documentType,
+                                                              ),
+                                                          transition:
+                                                              Transition.zoom);
+                                                    },
+                                                    child: const Text(
+                                                        'Upload File'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('police clearance')
+                                    .isNotEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text('Police Clearance:',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      final id =
+                                                          policeClearanceDocuments[
+                                                                      0][
+                                                                  'document_id']
+                                                              .toString();
+
+                                                      final deleteDocumentsController =
+                                                          Get.find<
+                                                              DeleteDocumentsController>();
+                                                      await deleteDocumentsController
+                                                          .deleteDocument(id);
+
+                                                      final uuid = Get.find<
+                                                              UserInfoController>()
+                                                          .userInfo['uuid'];
+
+                                                      final documentsController =
+                                                          Get.find<
+                                                              DocumentsController>();
+                                                      await documentsController
+                                                          .fetchDocuments(uuid);
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'Police Clearance';
+                                                      final fileUrls =
+                                                          policeClearanceDocuments[
+                                                              0]['fileUrl'];
+                                                      Get.to(
+                                                          () => DocumentDetails(
+                                                                documentType:
+                                                                    documentType,
+                                                                fileUrls:
+                                                                    fileUrls,
+                                                              ),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    },
+                                                    child: const Text('View'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('nbi clearance').isEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                                Text('NBI CLEARANCE',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'nbi clearance';
+                                                      Get.to(
+                                                          () =>
+                                                              DocumentUploadScreen(
+                                                                documentType:
+                                                                    documentType,
+                                                              ),
+                                                          transition:
+                                                              Transition.zoom);
+                                                    },
+                                                    child: const Text(
+                                                        'Upload File'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                                if (getDocumentsByType('nbi clearance')
+                                    .isNotEmpty)
+                                  Column(
+                                    children: [
+                                      CustomCard(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text('NBI Clearance',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium),
+                                                const Icon(
+                                                  Icons.description_outlined,
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                const SizedBox(width: 24),
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      final id =
+                                                          nbiClearanceDocuments[
+                                                                      0][
+                                                                  'document_id']
+                                                              .toString();
+
+                                                      final deleteDocumentsController =
+                                                          Get.find<
+                                                              DeleteDocumentsController>();
+                                                      await deleteDocumentsController
+                                                          .deleteDocument(id);
+
+                                                      final uuid = Get.find<
+                                                              UserInfoController>()
+                                                          .userInfo['uuid'];
+
+                                                      final documentsController =
+                                                          Get.find<
+                                                              DocumentsController>();
+                                                      await documentsController
+                                                          .fetchDocuments(uuid);
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                    ),
+                                                    onPressed: () async {
+                                                      const documentType =
+                                                          'NBI Clearance';
+                                                      final fileUrls =
+                                                          nbiClearanceDocuments[
+                                                              0]['fileUrl'];
+                                                      Get.to(
+                                                          () => DocumentDetails(
+                                                                documentType:
+                                                                    documentType,
+                                                                fileUrls:
+                                                                    fileUrls,
+                                                              ),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    },
+                                                    child: const Text('View'),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 24),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  );
-                }),
-              ),
+                  ]),
             ],
           ),
         ),

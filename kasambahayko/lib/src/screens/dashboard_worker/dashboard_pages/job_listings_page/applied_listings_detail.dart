@@ -10,12 +10,14 @@ import 'package:kasambahayko/src/controllers/application_process/applicants_sche
 import 'package:kasambahayko/src/controllers/application_process/offer_controller.dart';
 import 'package:kasambahayko/src/controllers/application_process/timeline_create_controller.dart';
 import 'package:kasambahayko/src/controllers/auth_controllers/user_info_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_bookings_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/applied_listings_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/deletion_applied_listings_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/job_listings_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_accept_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/progress_timeline_decline_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/user_controller.dart';
 import 'package:kasambahayko/src/routing/api/api_constants.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_screen.dart';
 import 'package:kasambahayko/src/utils/theme_worker.dart';
@@ -40,6 +42,9 @@ class AppliedListingDetailsScreen extends StatelessWidget {
   final String jobEndTime;
   final String livingArrangement;
   final List<Map<String, dynamic>> progressTimeline;
+  final String formattedSalary;
+  final String paymentFrequency;
+  final String selectedBenefits;
 
   const AppliedListingDetailsScreen({
     super.key,
@@ -60,6 +65,9 @@ class AppliedListingDetailsScreen extends StatelessWidget {
     required this.formattedJobEndDate,
     required this.jobId,
     required this.progressTimeline,
+    required this.formattedSalary,
+    required this.paymentFrequency,
+    required this.selectedBenefits,
   });
 
   @override
@@ -725,71 +733,6 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                                           OfferController>()
                                                       .offer;
 
-                                                  String salaryString =
-                                                      offer['salary']
-                                                          .toString();
-
-                                                  double proposedSalary =
-                                                      double.tryParse(
-                                                              salaryString) ??
-                                                          0.0;
-
-                                                  NumberFormat currencyFormat =
-                                                      NumberFormat.currency(
-                                                          symbol: '₱ ',
-                                                          decimalDigits: 2);
-                                                  final formattedSalary =
-                                                      currencyFormat.format(
-                                                          proposedSalary);
-
-                                                  List<dynamic> benefitsData =
-                                                      offer['benefits'];
-                                                  List<String> benefits =
-                                                      benefitsData
-                                                          .map((dynamic
-                                                                  element) =>
-                                                              element
-                                                                  .toString())
-                                                          .map((String
-                                                                  benefit) =>
-                                                              '• $benefit')
-                                                          .toList();
-
-                                                  final selectedBenefits =
-                                                      benefits.join('\n');
-
-                                                  final selectedPaymentFrequency =
-                                                      offer['pay_frequency']
-                                                          .toString();
-                                                  final selectedDeadline =
-                                                      '${offer['deadline']} ${offer['deadline'] == 1 ? 'day' : 'days'}';
-
-                                                  String? updatedAtString =
-                                                      offer['updated_at'];
-
-                                                  DateTime? updatedAt;
-
-                                                  if (updatedAtString != null) {
-                                                    updatedAt =
-                                                        DateTime.tryParse(
-                                                            updatedAtString);
-                                                  }
-
-                                                  String updated =
-                                                      'No recent changes';
-
-                                                  if (updatedAt != null) {
-                                                    String formatDate =
-                                                        DateFormat('MMMM d, y')
-                                                            .format(updatedAt);
-                                                    String formatTime =
-                                                        DateFormat('h:mm a')
-                                                            .format(updatedAt);
-
-                                                    updated =
-                                                        '$formatDate at $formatTime';
-                                                  }
-
                                                   final appId =
                                                       offer['application_id']
                                                           .toString();
@@ -815,46 +758,6 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                                             ),
                                                             const SizedBox(
                                                                 height: 4),
-                                                            Text(
-                                                              'Last Updated',
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyLarge,
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 4),
-                                                            Text(
-                                                              updated,
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyMedium,
-                                                            ),
-                                                            const Divider(
-                                                              color: greycolor,
-                                                              thickness: 1,
-                                                            ),
-                                                            Text(
-                                                              'Deadline',
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyLarge,
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 4),
-                                                            Text(
-                                                              '$selectedDeadline from now',
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyMedium,
-                                                            ),
-                                                            const Divider(
-                                                              color: greycolor,
-                                                              thickness: 1,
-                                                            ),
                                                             Text(
                                                               'Proposed Salary',
                                                               style: Theme.of(
@@ -885,7 +788,7 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                                             const SizedBox(
                                                                 height: 4),
                                                             Text(
-                                                              selectedPaymentFrequency,
+                                                              paymentFrequency,
                                                               style: Theme.of(
                                                                       context)
                                                                   .textTheme
@@ -1160,7 +1063,25 @@ class AppliedListingDetailsScreen extends StatelessWidget {
                                                           const EdgeInsets.all(
                                                               12),
                                                     ),
-                                                    onPressed: () async {},
+                                                    onPressed: () async {
+                                                      final userController =
+                                                          Get.find<
+                                                              UserController>();
+                                                      final workerBookingsController =
+                                                          Get.find<
+                                                              WorkerBookingsController>();
+                                                      await workerBookingsController
+                                                          .fetchWorkerBookings(
+                                                              userController
+                                                                  .userId
+                                                                  .toString());
+                                                      Get.to(() =>
+                                                          const WorkerDashboardScreen(
+                                                            initialPage:
+                                                                WorkerDashboardSections
+                                                                    .bookings,
+                                                          ));
+                                                    },
                                                     child: const Text(
                                                         'View Bookings'),
                                                   ),

@@ -3,18 +3,20 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:kasambahayko/src/constants/colors.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
-import 'package:kasambahayko/src/controllers/bookings/employer_booking_details_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/employer_booking_request_controller.dart';
 import 'package:kasambahayko/src/controllers/messaging/messaging_controller.dart';
 import 'package:kasambahayko/src/controllers/messaging/messaging_history_controller.dart';
+import 'package:kasambahayko/src/routing/api/api_constants.dart';
 import 'package:kasambahayko/src/utils/theme_employer.dart';
 
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+class ChatRequestScreen extends StatelessWidget {
+  const ChatRequestScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final chatHistoryController = Get.find<ChatHistoryController>().messages;
-    final booking = Get.find<EmployerBookingDetailsController>().bookingData;
+    final booking =
+        Get.find<EmployerBookingRequestController>().bookingRequestData;
     final messageController = TextEditingController();
     return Theme(
       data: EmployerTheme.theme,
@@ -34,14 +36,15 @@ class ChatScreen extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: Obx(
                     () {
-                      final profileUrl =
-                          booking['worker']['profile_url'].toString();
+                      final profileUrl = booking['worker']['profile_url'];
+                      final fullImageUrl =
+                          '${ApiConstants.baseUrl}/assets/$profileUrl';
                       return ClipOval(
                         child: SizedBox(
                           width: 60,
                           height: 60,
                           child: Image.network(
-                            profileUrl,
+                            fullImageUrl,
                             fit: BoxFit.cover,
                           ),
                         ),

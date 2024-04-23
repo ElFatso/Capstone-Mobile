@@ -27,8 +27,14 @@ import 'package:kasambahayko/src/controllers/auth_controllers/signup_controller.
 import 'package:kasambahayko/src/controllers/bookings/employer_booking_details_controller.dart';
 import 'package:kasambahayko/src/controllers/bookings/employer_booking_request_controller.dart';
 import 'package:kasambahayko/src/controllers/bookings/employer_bookings_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_details_cancel_controller.dart';
 import 'package:kasambahayko/src/controllers/bookings/worker_booking_details_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_details_delete_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_accept_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_cancel_controller.dart';
 import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_decline_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_delete_controller.dart';
 import 'package:kasambahayko/src/controllers/bookings/worker_bookings_controller.dart';
 import 'package:kasambahayko/src/controllers/configurations_controller.dart';
 import 'package:kasambahayko/src/controllers/job_listings/applied_listings_controller.dart';
@@ -91,6 +97,12 @@ class AppBindings extends Bindings {
     Get.put(WorkerBookingsController());
     Get.put(WorkerBookingDetailsController());
     Get.put(WorkerBookingRequestController());
+    Get.put(WorkerBookingDetailsCancelController());
+    Get.put(WorkerBookingRequestCancelController());
+    Get.put(WorkerBookingDetailsDeleteController());
+    Get.put(WorkerBookingRequestDeleteController());
+    Get.put(WorkerBookingRequestAcceptController());
+    Get.put(WorkerBookingRequestDeclineController());
     Get.put(EmployerBookingsController());
     Get.put(EmployerBookingDetailsController());
     Get.put(EmployerBookingRequestController());

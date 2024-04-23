@@ -312,6 +312,23 @@ class AppliedJobsTab extends StatelessWidget {
               final lastName = appJob['post']['last_name'];
               final city = appJob['post']['city_municipality'];
               final distance = appJob['post']['distance'].toString();
+              String salaryString = appJob['post']['salary'].toString();
+              final paymentFrequency =
+                  appJob['post']['pay_frequency'].toString();
+              String benefitsData = appJob['post']['benefits'];
+
+              double proposedSalary = double.tryParse(salaryString) ?? 0.0;
+
+              NumberFormat currencyFormat =
+                  NumberFormat.currency(symbol: '₱ ', decimalDigits: 2);
+              final formattedSalary = currencyFormat.format(proposedSalary);
+
+              List<String> benefitsList =
+                  benefitsData.substring(1, benefitsData.length - 1).split(",");
+
+              final selectedBenefits = benefitsList.map((benefit) {
+                return "• ${benefit.trim()}";
+              }).join("\n");
 
               final startDate = DateFormat('yyyy-MM-dd').parse(jobStartDate);
               final endDate = DateFormat('yyyy-MM-dd').parse(jobEndDate);
@@ -457,6 +474,9 @@ class AppliedJobsTab extends StatelessWidget {
                                     jobStartTime: jobStartTime,
                                     jobEndTime: jobEndTime,
                                     livingArrangement: livingArrangement,
+                                    formattedSalary: formattedSalary,
+                                    paymentFrequency: paymentFrequency,
+                                    selectedBenefits: selectedBenefits,
                                   ),
                               transition: Transition.rightToLeft);
                         },

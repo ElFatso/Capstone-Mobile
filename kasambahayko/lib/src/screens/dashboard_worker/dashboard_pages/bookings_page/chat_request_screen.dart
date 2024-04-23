@@ -35,8 +35,9 @@ class ChatRequestScreen extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: Obx(
                     () {
-                      final profileUrl =
-                          booking['employer']['profile_url'].toString();
+                      final profileUrl = booking['employer']['profile_url'];
+                      // final fullImageUrl =
+                      //     '${ApiConstants.baseUrl}/assets/$profileUrl';
                       return ClipOval(
                         child: SizedBox(
                           width: 60,

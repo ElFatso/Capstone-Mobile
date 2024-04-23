@@ -8,8 +8,8 @@ import 'package:kasambahayko/src/constants/sizes.dart';
 import 'package:kasambahayko/src/controllers/bookings/employer_booking_details_controller.dart';
 import 'package:kasambahayko/src/controllers/bookings/employer_booking_request_controller.dart';
 import 'package:kasambahayko/src/controllers/bookings/employer_bookings_controller.dart';
-import 'package:kasambahayko/src/screens/dashboard_employer/bookings_page/booking_details.dart';
-import 'package:kasambahayko/src/screens/dashboard_employer/bookings_page/booking_request.dart';
+import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/bookings_page/booking_details.dart';
+import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/bookings_page/booking_request.dart';
 
 class BookingsPage extends StatelessWidget {
   const BookingsPage({super.key});

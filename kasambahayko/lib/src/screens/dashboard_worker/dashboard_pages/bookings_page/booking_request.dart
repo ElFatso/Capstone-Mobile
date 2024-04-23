@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:kasambahayko/src/common_widgets/card/custom_card.dart';
+import 'package:kasambahayko/src/common_widgets/drawer_worker/dashboard_sections.dart';
 import 'package:kasambahayko/src/common_widgets/highlight_text/booking_highlight.dart';
 import 'package:kasambahayko/src/common_widgets/highlight_text/highlight.dart';
 import 'package:kasambahayko/src/constants/colors.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_accept_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_cancel_controller.dart';
 import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_decline_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_booking_request_delete_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/worker_bookings_controller.dart';
 import 'package:kasambahayko/src/controllers/messaging/messaging_controller.dart';
 import 'package:kasambahayko/src/controllers/messaging/messaging_history_controller.dart';
+import 'package:kasambahayko/src/controllers/user_controllers/user_controller.dart';
 import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_pages/bookings_page/chat_request_screen.dart';
+import 'package:kasambahayko/src/screens/dashboard_worker/dashboard_screen.dart';
 import 'package:kasambahayko/src/utils/theme_worker.dart';
+// ignore: library_prefixes
+import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 class BookingRequestScreen extends StatelessWidget {
   const BookingRequestScreen({
@@ -73,6 +84,12 @@ class BookingRequestScreen extends StatelessWidget {
                               const BookingHighlight(
                                 label: 'Booking Overview',
                                 highlightColor: orangecolor,
+                                text: 'Declined',
+                              )
+                            else if (progress == 'Expired')
+                              const BookingHighlight(
+                                label: 'Booking Overview',
+                                highlightColor: greycolor,
                                 text: 'Declined',
                               ),
                           ],
@@ -418,6 +435,8 @@ class BookingRequestScreen extends StatelessWidget {
                             final lastName = booking['employer']['last_name'];
                             final profileUrl =
                                 booking['employer']['profile_url'];
+                            // final fullImageUrl =
+                            //     '${ApiConstants.baseUrl}/assets/$profileUrl';
                             final phone = booking['employer']['phone'];
                             final email = booking['employer']['email'];
                             return Padding(
@@ -467,13 +486,17 @@ class BookingRequestScreen extends StatelessWidget {
                                             ),
                                           ),
                                           const SizedBox(height: 8),
-                                          Text(
-                                            phone,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
+                                          InkWell(
+                                            child: Text(
+                                              phone,
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                              ),
                                             ),
+                                            onTap: () => UrlLauncher.launchUrl(
+                                                Uri.parse('tel:$phone')),
                                           ),
                                         ],
                                       ),
@@ -521,24 +544,226 @@ class BookingRequestScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const SizedBox(width: 48),
-                        Expanded(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                    Obx(
+                      () {
+                        final progress =
+                            booking['booking_info']['booking_progress'];
+                        if (progress == 'Confirmed' ||
+                            progress == 'In Progress' ||
+                            progress == 'Pending') {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const SizedBox(width: 48),
+                              Expanded(
+                                child: OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    padding: const EdgeInsets.all(16),
+                                  ),
+                                  onPressed: () async {
+                                    final workerBookingRequestCancelController =
+                                        Get.find<
+                                            WorkerBookingRequestCancelController>();
+                                    await workerBookingRequestCancelController
+                                        .cancelBookingRequest(
+                                            booking['booking_info']['dhb_id']
+                                                .toString(),
+                                            'I have other commitments');
+                                    final workerBookingRequestController = Get
+                                        .find<WorkerBookingRequestController>();
+                                    await workerBookingRequestController
+                                        .fetchBookingRequest(
+                                            booking['booking_info']['dhb_id']
+                                                .toString());
+                                    final userController =
+                                        Get.find<UserController>();
+                                    final workerBookingsController =
+                                        Get.find<WorkerBookingsController>();
+                                    await workerBookingsController
+                                        .fetchWorkerBookings(
+                                            userController.userId.toString());
+                                  },
+                                  child: const Text('Cancel Booking'),
+                                ),
                               ),
-                              padding: const EdgeInsets.all(16),
-                            ),
-                            onPressed: () async {},
-                            child: const Text('Delete Booking'),
-                          ),
-                        ),
-                        const SizedBox(width: 48),
-                      ],
+                              const SizedBox(width: 48),
+                            ],
+                          );
+                        } else if (progress == 'Completed' ||
+                            progress == 'Cancelled' ||
+                            progress == 'Declined' ||
+                            progress == 'Expired') {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const SizedBox(width: 48),
+                              Expanded(
+                                child: OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    padding: const EdgeInsets.all(16),
+                                  ),
+                                  onPressed: () async {
+                                    final workerBookingRequestDeleteController =
+                                        Get.find<
+                                            WorkerBookingRequestDeleteController>();
+                                    await workerBookingRequestDeleteController
+                                        .deleteBookingRequest(
+                                            booking['booking_info']['dhb_id']
+                                                .toString());
+                                    final userController =
+                                        Get.find<UserController>();
+                                    final workerBookingsController =
+                                        Get.find<WorkerBookingsController>();
+                                    await workerBookingsController
+                                        .fetchWorkerBookings(
+                                            userController.userId.toString());
+                                    Get.to(() => const WorkerDashboardScreen(
+                                          initialPage:
+                                              WorkerDashboardSections.bookings,
+                                        ));
+                                  },
+                                  child: const Text('Delete Booking'),
+                                ),
+                              ),
+                              const SizedBox(width: 48),
+                            ],
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                    Obx(
+                      () {
+                        final progress =
+                            booking['booking_info']['booking_progress'];
+                        if (progress == 'Pending') {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 8),
+                              const Divider(
+                                color: greycolor,
+                                thickness: 1,
+                              ),
+                              const SizedBox(height: 4),
+                              SizedBox(
+                                width: 300,
+                                height: 150,
+                                child: CustomCard(
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          const SizedBox(width: 24),
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.all(16),
+                                              ),
+                                              onPressed: () async {
+                                                final workerBookingRequestAcceptController =
+                                                    Get.find<
+                                                        WorkerBookingRequestAcceptController>();
+                                                await workerBookingRequestAcceptController
+                                                    .acceptBookingRequest(
+                                                        booking['booking_info']
+                                                                ['dhb_id']
+                                                            .toString());
+                                                final workerBookingRequestController =
+                                                    Get.find<
+                                                        WorkerBookingRequestController>();
+                                                await workerBookingRequestController
+                                                    .fetchBookingRequest(
+                                                        booking['booking_info']
+                                                                ['dhb_id']
+                                                            .toString());
+                                                final userController =
+                                                    Get.find<UserController>();
+                                                final workerBookingsController =
+                                                    Get.find<
+                                                        WorkerBookingsController>();
+                                                await workerBookingsController
+                                                    .fetchWorkerBookings(
+                                                        userController.userId
+                                                            .toString());
+                                              },
+                                              child: const Text('Accept'),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 24),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          const SizedBox(width: 24),
+                                          Expanded(
+                                            child: OutlinedButton(
+                                              style: OutlinedButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.all(16),
+                                              ),
+                                              onPressed: () async {
+                                                final workerBookingRequestDeclineController =
+                                                    Get.find<
+                                                        WorkerBookingRequestDeclineController>();
+                                                await workerBookingRequestDeclineController
+                                                    .declineBookingRequest(
+                                                        booking['booking_info']
+                                                                ['dhb_id']
+                                                            .toString());
+                                                final workerBookingRequestController =
+                                                    Get.find<
+                                                        WorkerBookingRequestController>();
+                                                await workerBookingRequestController
+                                                    .fetchBookingRequest(
+                                                        booking['booking_info']
+                                                                ['dhb_id']
+                                                            .toString());
+                                                final userController =
+                                                    Get.find<UserController>();
+                                                final workerBookingsController =
+                                                    Get.find<
+                                                        WorkerBookingsController>();
+                                                await workerBookingsController
+                                                    .fetchWorkerBookings(
+                                                        userController.userId
+                                                            .toString());
+                                              },
+                                              child: const Text('Decline'),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 24),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
                     ),
                   ],
                 ),

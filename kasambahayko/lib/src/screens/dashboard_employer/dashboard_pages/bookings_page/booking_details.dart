@@ -5,21 +5,21 @@ import 'package:kasambahayko/src/common_widgets/highlight_text/booking_highlight
 import 'package:kasambahayko/src/common_widgets/highlight_text/highlight.dart';
 import 'package:kasambahayko/src/constants/colors.dart';
 import 'package:kasambahayko/src/constants/sizes.dart';
-import 'package:kasambahayko/src/controllers/bookings/employer_booking_request_controller.dart';
+import 'package:kasambahayko/src/controllers/bookings/employer_booking_details_controller.dart';
 import 'package:kasambahayko/src/controllers/messaging/messaging_controller.dart';
 import 'package:kasambahayko/src/controllers/messaging/messaging_history_controller.dart';
-import 'package:kasambahayko/src/screens/dashboard_employer/bookings_page/chat_request_screen.dart';
+import 'package:kasambahayko/src/routing/api/api_constants.dart';
+import 'package:kasambahayko/src/screens/dashboard_employer/dashboard_pages/bookings_page/chat_screen.dart';
 import 'package:kasambahayko/src/utils/theme_employer.dart';
 
-class BookingRequestScreen extends StatelessWidget {
-  const BookingRequestScreen({
+class BookingDetailsScreen extends StatelessWidget {
+  const BookingDetailsScreen({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final booking =
-        Get.find<EmployerBookingRequestController>().bookingRequestData;
+    final booking = Get.find<EmployerBookingDetailsController>().bookingData;
     return Theme(
       data: EmployerTheme.theme,
       child: Scaffold(
@@ -312,15 +312,16 @@ class BookingRequestScreen extends StatelessWidget {
                         Obx(
                           () {
                             final salary = double.parse(
-                                booking['offer']['salary'].toString());
+                                booking['jobposting']['salary'].toString());
 
                             final formattedSalary = NumberFormat.currency(
                               locale: 'en_US',
                               symbol: '₱',
                             ).format(salary);
-                            final frequency = booking['offer']['pay_frequency'];
+                            final frequency =
+                                booking['jobposting']['pay_frequency'];
                             List<dynamic> benefitsData =
-                                booking['offer']['benefits'];
+                                booking['jobposting']['benefits'];
                             List<String> benefits = benefitsData
                                 .map((dynamic element) => element.toString())
                                 .map((String benefit) => '• $benefit')
@@ -417,6 +418,8 @@ class BookingRequestScreen extends StatelessWidget {
                             final firstName = booking['worker']['first_name'];
                             final lastName = booking['worker']['last_name'];
                             final profileUrl = booking['worker']['profile_url'];
+                            final fullImageUrl =
+                                '${ApiConstants.baseUrl}/assets/$profileUrl';
                             final phone = booking['worker']['phone'];
                             final email = booking['worker']['email'];
                             return Padding(
@@ -435,7 +438,7 @@ class BookingRequestScreen extends StatelessWidget {
                                             width: 80,
                                             height: 80,
                                             child: Image.network(
-                                              profileUrl,
+                                              fullImageUrl,
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -510,7 +513,7 @@ class BookingRequestScreen extends StatelessWidget {
                               chatController.messagingService.joinRoom(
                                   booking['employer']['uuid'],
                                   booking['worker']['uuid']);
-                              Get.to(() => const ChatRequestScreen(),
+                              Get.to(() => const ChatScreen(),
                                   transition: Transition.downToUp);
                             },
                             child: const Text('Send Message'),
